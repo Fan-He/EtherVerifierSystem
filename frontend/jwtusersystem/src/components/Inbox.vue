@@ -3,7 +3,7 @@
       <h2>Inbox</h2>
       <div v-for="message in messages" :key="message._id">
         <p><strong>From:</strong> {{ message.from.username }}</p>
-        <p><strong>Message:</strong> {{ decryptMessage(message.content) }}</p>
+        <p><strong>Message:</strong> {{ message.decryptedContent }}</p>
         <hr />
       </div>
     </div>
@@ -41,7 +41,12 @@
           headers: { Authorization: `Bearer ${token}` }
         });
   
-        this.messages = messagesResponse.data;
+        const messages = messagesResponse.data;
+        for (const message of messages) {
+          message.decryptedContent = await this.decryptMessage(message.content);
+        }
+  
+        this.messages = messages;
       } catch (error) {
         console.error('Error fetching messages:', error);
         alert('Error fetching messages: ' + (error.response ? error.response.data.error : error.message));
