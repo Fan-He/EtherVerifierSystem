@@ -26,10 +26,11 @@
             email: this.email,
             password: this.password
           });
-          localStorage.setItem('token', response.data.token);
+          const token = response.data.token;
+          localStorage.setItem('token', token); // Store the token in local storage
           alert('Login successful');
         } catch (error) {
-          alert('Error logging in: ' + error.response.data.error);
+          alert('Error logging in: ' + (error.response ? error.response.data.error : error.message));
         }
       }
     }
