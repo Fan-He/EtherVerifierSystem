@@ -36,6 +36,7 @@
         });
   
         this.privateKey = decryptedPrivateKey;
+        console.log('Decrypted Private Key:', this.privateKey); // Log the decrypted private key
   
         const messagesResponse = await axios.get('/api/messages/inbox', {
           headers: { Authorization: `Bearer ${token}` }
@@ -60,11 +61,19 @@
         }
   
         try {
+          console.log('Encrypted Message:', encryptedMessage); // Log the encrypted message
           const message = await openpgp.readMessage({ armoredMessage: encryptedMessage });
-          const { data: decryptedMessage } = await openpgp.decrypt({
+          console.log('Read Message:', message); // Log the read message
+  
+          const decryptionResult = await openpgp.decrypt({
             message,
             decryptionKeys: this.privateKey
           });
+  
+          console.log('Decryption Result:', decryptionResult); // Log the decryption result
+  
+          const { data: decryptedMessage } = decryptionResult;
+          console.log('Decrypted Message:', decryptedMessage); // Log the decrypted message
           return decryptedMessage;
         } catch (error) {
           console.error('Error decrypting message:', error);
