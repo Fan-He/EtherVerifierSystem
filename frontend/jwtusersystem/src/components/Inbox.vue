@@ -29,10 +29,18 @@
   
         const profile = profileResponse.data;
         const privateKey = await openpgp.readPrivateKey({ armoredKey: profile.privateKey });
-  
+
+        // Decode the JWT to extract the passphrase
+        const decodedToken = JSON.parse(atob(token.split('.')[1]));
+        console.log('Decoded Token:', decodedToken); // Log the decoded token
+        console.log('tempPassword: ', decodedToken.tempPassword);
+
+        this.passphrase = decodedToken.tempPassword;
+
+        console.log('Undecrypted private key:', privateKey); // Log the undecrypted private key
         const decryptedPrivateKey = privateKey.isDecrypted() ? privateKey : await openpgp.decryptKey({
           privateKey,
-          passphrase: profile.password // Assuming the password is used to protect the private key
+          // passphrase: decodedToken.tempPassword 
         });
   
         this.privateKey = decryptedPrivateKey;
@@ -44,7 +52,8 @@
   
         const messages = messagesResponse.data;
         for (const message of messages) {
-          message.decryptedContent = await this.decryptMessage(message.content);
+          message.firstdecryptedContent = await this.decryptMessage(message.content);
+          message.decryptedContent = await this.decryptMessage(message.firstdecryptedContent);
         }
   
         this.messages = messages;
@@ -64,12 +73,13 @@
           console.log('Encrypted Message:', encryptedMessage); // Log the encrypted message
           const message = await openpgp.readMessage({ armoredMessage: encryptedMessage });
           console.log('Read Message:', message); // Log the read message
-  
+          console.log('Private Key:', this.privateKey); // Log the private key
+
           const decryptionResult = await openpgp.decrypt({
             message,
             decryptionKeys: this.privateKey
           });
-  
+
           console.log('Decryption Result:', decryptionResult); // Log the decryption result
   
           const { data: decryptedMessage } = decryptionResult;

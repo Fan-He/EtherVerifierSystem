@@ -19,7 +19,8 @@ exports.register = async (req, res) => {
     const { privateKey, publicKey } = await openpgp.generateKey({
       type: 'rsa',
       rsaBits: 2048,
-      userIDs: [{ name: username, email }]
+      userIDs: [{ name: username, email }], 
+      passphrase: password
     });
 
     const user = new User({ username, email, password: hashedPassword, publicKey, privateKey });
@@ -42,8 +43,9 @@ exports.login = async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
-
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    console.log('input password: ', req.body.password)
+    const token = jwt.sign({ id: user._id, tempPassword: req.body.password }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    //const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
     res.json({ token });
   } catch (error) {
     res.status(400).json({ error: error.message });
