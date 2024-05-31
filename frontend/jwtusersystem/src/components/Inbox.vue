@@ -40,7 +40,7 @@
         console.log('Undecrypted private key:', privateKey); // Log the undecrypted private key
         const decryptedPrivateKey = privateKey.isDecrypted() ? privateKey : await openpgp.decryptKey({
           privateKey,
-          // passphrase: decodedToken.tempPassword 
+          passphrase: decodedToken.tempPassword 
         });
   
         this.privateKey = decryptedPrivateKey;
@@ -52,8 +52,9 @@
   
         const messages = messagesResponse.data;
         for (const message of messages) {
-          message.firstdecryptedContent = await this.decryptMessage(message.content);
-          message.decryptedContent = await this.decryptMessage(message.firstdecryptedContent);
+          // message.firstdecryptedContent = await this.decryptMessage(message.content);
+          // message.decryptedContent = await this.decryptMessage(message.firstdecryptedContent);
+          message.decryptedContent = await this.decryptMessage(message.content);
         }
   
         this.messages = messages;
