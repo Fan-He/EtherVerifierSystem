@@ -42,6 +42,7 @@
         <p><strong>Username:</strong> {{ user.username }}</p>
         <p><strong>Email:</strong> {{ user.email }}</p>
       </div>
+      <p>Change Account? <router-link to="/login" style="color: blue; text-decoration: underline;">Login!</router-link></p>
     </div>
   </template>
 
