@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
     <div>
       <h1>Register</h1>
       <form @submit.prevent="register">
@@ -40,5 +40,71 @@
   
   <style>
   /* Add your styles here */
-  </style>
+  </style> -->
+  <template>
+    <div class="register-container">
+      <h1>Register</h1>
+      <form @submit.prevent="register" class="register-form">
+        <input v-model="username" placeholder="Username" required />
+        <input v-model="email" type="email" placeholder="Email" required />
+        <input v-model="password" type="password" placeholder="Password" required />
+        <button type="submit">Register</button>
+      </form>
+    </div>
+  </template>
+
+  <script>
+  import axios from 'axios';
+
+  export default {
+    data() {
+      return {
+        username: '',
+        email: '',
+        password: ''
+      };
+    },
+    methods: {
+      async register() {
+        try {
+          await axios.post('/api/auth/register', {
+            username: this.username,
+            email: this.email,
+            password: this.password
+          });
+          alert('Registration successful');
+        } catch (error) {
+          alert('Error registering: ' + error.response.data.error);
+        }
+      }
+    }
+  };
+  </script>
+
+<style scoped>
+.register-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 50vh;
+}
+
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 300px;
+  max-width: 90%;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+  .register-form {
+    width: 90%;
+  }
+}
+</style>
   

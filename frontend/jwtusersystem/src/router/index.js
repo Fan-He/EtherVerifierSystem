@@ -1,10 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Home from '../views/Home.vue';
+import Home from '../views/HomeView.vue';
 import Login from '../components/Login.vue';
 import Register from '../components/Register.vue';
 import ProfileView from '../views/ProfileView.vue';
 import SendMessage from '../components/SendMessage.vue';
 import Inbox from '../components/Inbox.vue';
+import Board from '../views/BoardView.vue';
 
 const routes = [
   { path: '/', component: Home },
@@ -12,7 +13,8 @@ const routes = [
   { path: '/register', component: Register },
   { path: '/profile', component: ProfileView },
   { path: '/send-message', component: SendMessage },
-  { path: '/inbox', component: Inbox }
+  { path: '/inbox', component: Inbox }, 
+  { path: '/board', component: Board }, 
 ];
 
 const router = createRouter({
