@@ -42,27 +42,21 @@
     align-items: center;
     justify-content: center;
     height: 50vh;
-    width: 80%;
+    width: 100%;
     max-width: 400px;
     margin: 0 auto;
   }
-
   .profile h1 {
     font-size: 24px;
     margin-bottom: 20px;
   }
-
   .profile-info {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     background-color: #f5f5f5;
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 100%;
   }
-
   .profile-info p {
     margin-bottom: 10px;
   }

@@ -5,8 +5,9 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   publicKey: { type: String },
-  privateKey: { type: String }, 
+  privateKey: { type: String },
   walletAddress: { type: String, unique: true },
+  walletPrivateKey: { type: String }, // Store the private key securely if needed
 });
 
 module.exports = mongoose.model('User', UserSchema);

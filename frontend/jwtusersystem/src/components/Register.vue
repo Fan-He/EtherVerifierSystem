@@ -8,6 +8,7 @@
         <input v-model="walletAddress" placeholder="Wallet Address (optional)" />
         <button type="submit">Register</button>
       </form>
+      <p>Already Have An Account? <router-link to="/login" style="color: blue; text-decoration: underline;">Login!</router-link></p>
     </div>
   </template>
 

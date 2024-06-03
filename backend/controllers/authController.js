@@ -2,19 +2,15 @@ const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const openpgp = require('openpgp');
+const { ethers } = require('ethers');
 
 exports.register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
+
     // Check if address is provided
-    let walletAddress;
-    if (req.body.hasOwnProperty('walletAddress')) {
-      walletAddress = req.body.walletAddress;
-      console.log('address: ', walletAddress);
-    } else {
-      walletAddress = null;
-      console.log('address: ', walletAddress);
-    }
+    let walletAddress = req.body.walletAddress || null;
+    let walletPrivateKey = null;
 
     // Check if email already exists
     const existingUser = await User.findOne({ email });
@@ -23,7 +19,7 @@ exports.register = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    
+
     // Generate public and private keys
     const { privateKey, publicKey } = await openpgp.generateKey({
       type: 'rsa',
@@ -32,9 +28,25 @@ exports.register = async (req, res) => {
       passphrase: password
     });
 
-    const user = new User({ username, email, password: hashedPassword, publicKey, privateKey, walletAddress });
+    // Create a wallet if not provided
+    if (!walletAddress) {
+      const wallet = ethers.Wallet.createRandom();
+      walletAddress = wallet.address;
+      walletPrivateKey = wallet.privateKey;
+    }
+
+    const user = new User({
+      username,
+      email,
+      password: hashedPassword,
+      publicKey,
+      privateKey,
+      walletAddress,
+      walletPrivateKey
+    });
+
     await user.save();
-    res.status(201).json({ message: 'User registered successfully' });
+    res.status(201).json({ message: 'User registered successfully', walletAddress, walletPrivateKey });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -54,7 +66,6 @@ exports.login = async (req, res) => {
     }
     console.log('input password: ', req.body.password)
     const token = jwt.sign({ id: user._id, tempPassword: req.body.password }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    //const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
     res.json({ token });
   } catch (error) {
     res.status(400).json({ error: error.message });
