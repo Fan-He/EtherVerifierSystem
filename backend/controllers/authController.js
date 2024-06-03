@@ -6,6 +6,15 @@ const openpgp = require('openpgp');
 exports.register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
+    // Check if address is provided
+    let walletAddress;
+    if (req.body.hasOwnProperty('walletAddress')) {
+      walletAddress = req.body.walletAddress;
+      console.log('address: ', walletAddress);
+    } else {
+      walletAddress = null;
+      console.log('address: ', walletAddress);
+    }
 
     // Check if email already exists
     const existingUser = await User.findOne({ email });
@@ -23,7 +32,7 @@ exports.register = async (req, res) => {
       passphrase: password
     });
 
-    const user = new User({ username, email, password: hashedPassword, publicKey, privateKey });
+    const user = new User({ username, email, password: hashedPassword, publicKey, privateKey, walletAddress });
     await user.save();
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {

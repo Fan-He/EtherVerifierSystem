@@ -1,39 +1,3 @@
-<!-- <template>
-    <div>
-      <h1>Profile</h1>
-      <p><strong>Username:</strong> {{ user.username }}</p>
-      <p><strong>Email:</strong> {{ user.email }}</p>
-    </div>
-  </template>
-  
-  <script>
-  import axios from 'axios';
-  
-  export default {
-    data() {
-      return {
-        user: {}
-      };
-    },
-    async created() {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get('/api/auth/profile', {
-          headers: { Authorization: token }
-        });
-        this.user = response.data;
-      } catch (error) {
-        console.error(error);
-        this.$router.push('/login');
-      }
-    }
-  };
-  </script>
-  
-  <style>
-  /* Add your styles here */
-  </style> -->
-
 
   <template>
     <div class="profile">
@@ -41,6 +5,7 @@
       <div class="profile-info">
         <p><strong>Username:</strong> {{ user.username }}</p>
         <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Wallet Address:</strong> {{ user.walletAddress }}</p>
       </div>
       <p>Change Account? <router-link to="/login" style="color: blue; text-decoration: underline;">Login!</router-link></p>
     </div>
@@ -77,6 +42,9 @@
     align-items: center;
     justify-content: center;
     height: 50vh;
+    width: 80%;
+    max-width: 400px;
+    margin: 0 auto;
   }
 
   .profile h1 {
@@ -85,10 +53,14 @@
   }
 
   .profile-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     background-color: #f5f5f5;
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
   }
 
   .profile-info p {

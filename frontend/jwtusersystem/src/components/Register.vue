@@ -5,6 +5,7 @@
         <input v-model="username" placeholder="Username" required />
         <input v-model="email" type="email" placeholder="Email" required />
         <input v-model="password" type="password" placeholder="Password" required />
+        <input v-model="walletAddress" placeholder="Wallet Address (optional)" />
         <button type="submit">Register</button>
       </form>
     </div>
@@ -18,17 +19,33 @@
       return {
         username: '',
         email: '',
-        password: ''
+        password: '', 
+        walletAddress: ''
       };
     },
     methods: {
       async register() {
         try {
-          await axios.post('/api/auth/register', {
-            username: this.username,
-            email: this.email,
-            password: this.password
-          });
+          if (this.walletAddress) {
+            await axios.post('/api/auth/register', {
+              username: this.username,
+              email: this.email,
+              password: this.password,
+              walletAddress: this.walletAddress
+            });
+          } else {
+            await axios.post('/api/auth/register', {
+              username: this.username,
+              email: this.email,
+              password: this.password
+            });
+          }
+          // await axios.post('/api/auth/register', {
+          //   username: this.username,
+          //   email: this.email,
+          //   password: this.password, 
+          //   walletAddress: this.walletAddress
+          // });
           alert('Registration successful');
         } catch (error) {
           alert('Error registering: ' + error.response.data.error);
