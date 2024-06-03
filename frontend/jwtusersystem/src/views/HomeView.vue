@@ -28,7 +28,7 @@
 .square-link {
   text-decoration: none;
   color: whitesmoke;
-  font-size: 30px;
+  font-size: 35px;
 }
 
 

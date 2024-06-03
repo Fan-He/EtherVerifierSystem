@@ -21,24 +21,20 @@ const active = ref(0);
       <main>
         <router-view></router-view>
       </main>
-      <van-tabbar  route>
-        <van-tabbar-item to="/profile" icon="user">My Profile</van-tabbar-item>
-        <van-tabbar-item to="/" icon="wap-home">HomePage</van-tabbar-item>
-        <van-tabbar-item to="/board" icon="notes">Board</van-tabbar-item>
+      <van-tabbar route>
+        <van-tabbar-item to="/profile" icon="user" :active-color="'lightblue'">My Profile</van-tabbar-item>
+        <van-tabbar-item to="/" icon="wap-home" :active-color="'lightblue'">HomePage</van-tabbar-item>
+        <van-tabbar-item to="/board" icon="notes" :active-color="'lightblue'">Board</van-tabbar-item>
       </van-tabbar>
   </div>
 </template>
 
-<!-- <style lang="less" scoped>
-@import url('https://fonts.googleapis.com/css?family=Poppins');
-
-</style> -->
 
 <style>
 
   .header {
       height: 60px;
-      background-color: #a3d6d5;
+      background-color: lightblue;
       color: white;
       text-align: center;
       line-height: 60px;
