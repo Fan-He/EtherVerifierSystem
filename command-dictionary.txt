@@ -1,0 +1,98 @@
+#------------------frontend---------------------------
+# npm run build
+# sudo nginx -t
+# sudo systemctl restart nginx
+
+#------------------backend----------------------------
+# pm2 list
+# pm2 logs backend
+# pm2 resurrect       ----If you previously saved the PM2 process list, you can resurrect them
+# pm2 start server.js --name backend --watch --env production
+# pm2 stop <process_id>
+# pm2 restart <process_id>
+
+#------------------MongoDB----------------------------
+# mongo
+# db.users.find({ email: "<email-address>" })
+# db.users.find({ email: "TestUser5@gmail.com" }).pretty()
+
+#------------------After Modification----------------------------
+backend: 
+# pm2 stop <process_id>
+# pm2 restart <process_id>
+frontend: 
+# npm run build
+# sudo nginx -t
+# sudo systemctl restart nginx
+
+#------------------UFW Firewall----------------------------
+Default: deny all incoming
+# sudo ufw default deny incoming
+# sudo ufw default allow 
+
+Allow Necessary Services:
+Allow only the necessary ports that your application and services need to function. For example, SSH, HTTP/HTTPS for web servers, and any specific ports your application uses.
+# sudo ufw allow 22/tcp       # SSH
+# sudo ufw allow 80/tcp       # HTTP
+# sudo ufw allow 443/tcp      # HTTPS
+# sudo ufw allow 5000/tcp     # Custom application port
+
+Limit SSH access to trusted IP addresses or subnets to reduce the attack surface.
+# sudo ufw allow from <trusted-ip> to any port 22
+
+Remove Unnecessary Rules:
+Remove any rules that are not needed. For example, if your application does not need ports 5005 or 5001 open, you should remove those rules.
+# sudo ufw delete allow 5005/tcp
+
+Enable UFW Logging:
+Enable logging to monitor and audit any potential issues or unauthorized access attempts.
+# sudo ufw logging on
+
+# Reset UFW to default settings
+sudo ufw reset
+
+# Set default policies
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+
+# Allow SSH (from trusted IPs only)
+sudo ufw allow from <trusted-ip> to any port 22
+
+# Allow HTTP and HTTPS
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+
+# Allow custom application port
+sudo ufw allow 5000/tcp
+
+# Enable UFW
+sudo ufw enable
+
+# Enable logging
+sudo ufw logging on
+
+Regularly Review Firewall Rules:
+Periodically review and update your firewall rules to ensure they are still relevant and necessary.
+# sudo ufw status verbose
+
+Allow All Incoming and Outgoing Traffic: 
+# Allow all incoming traffic
+sudo ufw default allow incoming
+
+# Allow all outgoing traffic
+sudo ufw default allow outgoing
+
+# Enable UFW (if not already enabled)
+sudo ufw enable
+
+# Disable UFW
+sudo ufw disable
+
+# Reset UFW to default settings
+sudo ufw reset
+
+# Enable UFW (optional, if you want the default deny/allow policy active)
+sudo ufw enable
+
+
+
