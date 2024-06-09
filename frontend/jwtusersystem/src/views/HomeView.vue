@@ -35,15 +35,78 @@
 </style>
 <template>
   <div class="home-view">
+    <p>Your current identity is: {{ identity }}</p>
     <div class="upper-square">
       <div class="square-content">
-        <a href="#" class="square-link">Verifier</a>
+        <button @click="confirmSwitch('verifier')">Switch to Verifier</button>
       </div>
     </div>
     <div class="lower-square">
       <div class="square-content">
-        <a href="#" class="square-link">Provider</a>
+        <button @click="confirmSwitch('provider')">Switch to Provider</button>
       </div>
+    </div>
+    <div v-if="showPopup" class="popup">
+      <p>Are you sure you want to switch to {{ targetIdentity }}?</p>
+      <button @click="switchIdentity">Yes</button>
+      <button @click="showPopup = false">No</button>
     </div>
   </div>
 </template>
+
+<script>
+import axios from 'axios';
+
+export default {
+  data() {
+    return {
+      identity: '', // Current identity
+      showPopup: false, // Control popup visibility
+      targetIdentity: '', // Identity to switch to
+      user:{}
+    };
+  },
+  created() {
+    this.fetchProfile();
+  },
+  methods: {
+    async fetchProfile() {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('/api/auth/profile', {
+          headers: { Authorization: token }
+        });
+        this.user = response.data;
+        this.identity = response.data.identity;
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      }
+    },
+    confirmSwitch(identity) {
+      if (this.identity !== identity) {
+        this.targetIdentity = identity;
+        this.showPopup = true;
+      }
+    },
+    async switchIdentity() {
+      try {
+        const user_token = localStorage.getItem('token');
+        const user_response = await axios.get('/api/auth/profile', {
+          headers: { Authorization: user_token }
+        });
+        this.user = user_response.data;
+        const token = localStorage.getItem('token');
+        const response = await axios.post('/api/auth/switch-identity', 
+          { email: this.user.email, newIdentity: this.targetIdentity }, 
+          {headers: { Authorization: `Bearer ${token}` }
+        });
+        this.identity = this.targetIdentity;
+        this.showPopup = false;  
+        alert(response.data.message);
+      } catch (error) {
+        console.error('Error switching identity:', error);
+      }
+    }
+  }
+};
+</script>

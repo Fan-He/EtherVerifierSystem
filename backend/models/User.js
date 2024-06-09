@@ -7,7 +7,8 @@ const UserSchema = new mongoose.Schema({
   publicKey: { type: String },
   privateKey: { type: String },
   walletAddress: { type: String, unique: true },
-  walletPrivateKey: { type: String }, // Store the private key securely if needed
+  walletPrivateKey: { type: String },
+  identity: { type: String, enum: ['provider', 'verifier'], required: true, default: 'verifier' }
 });
 
 module.exports = mongoose.model('User', UserSchema);

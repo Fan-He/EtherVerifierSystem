@@ -24,7 +24,7 @@ exports.register = async (req, res) => {
     const { privateKey, publicKey } = await openpgp.generateKey({
       type: 'rsa',
       rsaBits: 2048,
-      userIDs: [{ name: username, email }], 
+      userIDs: [{ name: username, email }],
       passphrase: password
     });
 
@@ -42,7 +42,8 @@ exports.register = async (req, res) => {
       publicKey,
       privateKey,
       walletAddress,
-      walletPrivateKey
+      walletPrivateKey, 
+      identity: 'verifier'
     });
 
     await user.save();
@@ -92,3 +93,41 @@ exports.getUserProfileByEmail = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
+exports.switchIdentity = async (req, res) => {
+  try {
+    const { email, newIdentity } = req.body;
+    // const email = req.params.email;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: 'Identity User not found' });
+    }
+    user.identity = newIdentity;
+    await user.save();
+    
+    res.json({ message: `Identity switched to ${newIdentity}` });
+    // const { email, identity } = req.body;
+
+    // console.log('User Email:', email);
+    // console.log('New Identity:', identity);
+
+    // if (!['provider', 'verifier'].includes(identity)) {
+    //   return res.status(400).json({ message: 'Invalid identity type' });
+    // }
+
+    // const user = await User.findOne({ email });
+    // if (!user) {
+    //   return res.status(404).json({ message: 'User not found' });
+    // }
+
+    // user.identity = identity;
+    // await user.save();
+
+    // res.json({ message: `Identity switched to ${identity}` });
+  } catch (error) {
+    console.error('Error switching identity:', error); // Add error logging
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
