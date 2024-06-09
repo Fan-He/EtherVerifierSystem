@@ -31,25 +31,81 @@
   font-size: 35px;
 }
 
+.identity-button {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+  color: whitesmoke;
+  font-size: 28px;
+  width: 80%;
+}
+
+.identity-text {
+  text-align: center;
+  font-size: 18pt;
+}
+
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: lightgray;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.popup-text {
+  margin-bottom: 10px;
+  font-size: 18px;
+  text-align: center;
+}
+
+.popup-button {
+  background-color: lightblue;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 24px;
+  border-radius: 5px;
+  cursor: pointer;
+  outline: none;
+  width: 80px;
+  margin: 5px;
+  
+}
+
+.popup-button:hover {
+  background-color: lightgreen;
+}
+
 
 </style>
+
 <template>
   <div class="home-view">
-    <p>Your current identity is: {{ identity }}</p>
+    <p class="identity-text">Your current identity is: {{ identity }}</p>
     <div class="upper-square">
       <div class="square-content">
-        <button @click="confirmSwitch('verifier')">Switch to Verifier</button>
+        <button class="identity-button" @click="confirmSwitch('verifier')">Switch to Verifier</button>
       </div>
     </div>
     <div class="lower-square">
       <div class="square-content">
-        <button @click="confirmSwitch('provider')">Switch to Provider</button>
+        <button class="identity-button" @click="confirmSwitch('provider')">Switch to Provider</button>
       </div>
     </div>
     <div v-if="showPopup" class="popup">
-      <p>Are you sure you want to switch to {{ targetIdentity }}?</p>
-      <button @click="switchIdentity">Yes</button>
-      <button @click="showPopup = false">No</button>
+      <p  class="popup-text">Are you sure you want to switch to {{ targetIdentity }}?</p>
+      <button class="popup-button" @click="switchIdentity">Yes</button>
+      <button class="popup-button" @click="showPopup = false">No</button>
     </div>
   </div>
 </template>
