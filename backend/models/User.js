@@ -12,8 +12,6 @@ const UserSchema = new mongoose.Schema({
   city: { type: String },
   state: { type: String },
   country: { type: String },
-  latitude: { type: Number },
-  longitude: { type: Number },
   lastUpdated: { type: Date, default: Date.now }
 });
 

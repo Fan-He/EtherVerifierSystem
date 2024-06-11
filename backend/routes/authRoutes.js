@@ -5,8 +5,8 @@ const updateUserLocation = require('../middleware/updateUserLocation');
 
 const router = express.Router();
 
-router.post('/register', register);
-router.post('/login', login);
+router.post('/register', register, updateUserLocation);
+router.post('/login', login, updateUserLocation);
 router.get('/profile', authMiddleware, updateUserLocation, getProfile);
 router.get('/profile/email/:email', authMiddleware, updateUserLocation, getUserProfileByEmail);
 router.post('/switch-identity', authMiddleware, updateUserLocation, switchIdentity);
