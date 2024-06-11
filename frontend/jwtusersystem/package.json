@@ -8,10 +8,12 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
+    "leaflet": "^1.9.4",
     "openpgp": "^5.11.1",
     "openssl": "^2.0.0",
     "vant": "^4.9.1",
     "vue": "^3.0.0",
+    "vue-leaflet": "^0.1.0",
     "vue-router": "^4.0.13"
   },
   "devDependencies": {

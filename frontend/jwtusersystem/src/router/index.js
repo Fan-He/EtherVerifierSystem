@@ -6,6 +6,7 @@ import ProfileView from '../views/ProfileView.vue';
 import SendMessage from '../components/SendMessage.vue';
 import Inbox from '../components/Inbox.vue';
 import Board from '../views/BoardView.vue';
+import MapView from '../views/MapView.vue';
 
 const routes = [
   { path: '/', component: Home },
@@ -15,6 +16,7 @@ const routes = [
   { path: '/send-message', component: SendMessage },
   { path: '/inbox', component: Inbox }, 
   { path: '/board', component: Board }, 
+  { path: '/map', name: 'map', component: MapView }
 ];
 
 const router = createRouter({
