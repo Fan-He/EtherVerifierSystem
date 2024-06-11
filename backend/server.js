@@ -9,8 +9,9 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
+Mongo_uri = 'mongodb://167.99.176.190:27017/usersystem';
 
-mongoose.connect(process.env.MONGO_URI, {
+mongoose.connect(Mongo_uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   serverSelectionTimeoutMS: 5005,
