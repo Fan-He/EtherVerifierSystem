@@ -13,6 +13,7 @@ const active = ref(0);
         <van-tabbar-item to="/profile" icon="user" :active-color="'lightblue'">My Profile</van-tabbar-item>
         <van-tabbar-item to="/" icon="wap-home" :active-color="'lightblue'">HomePage</van-tabbar-item>
         <van-tabbar-item to="/board" icon="notes" :active-color="'lightblue'">Board</van-tabbar-item>
+        <van-tabbar-item to="/map" icon="map-marked" :active-color="'lightblue'">Map</van-tabbar-item>
       </van-tabbar>
   </div>
 </template>
