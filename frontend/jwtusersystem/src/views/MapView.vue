@@ -57,7 +57,7 @@ export default {
 }
 </style> -->
 <template>
-  <div id="map" style="height: 100vh; width: 100vw;"></div>
+  <div id="map" style="height: 85vh; width: 100vw;"></div>
 </template>
 
 <script>
