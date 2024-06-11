@@ -57,8 +57,8 @@ export default {
 }
 </style> -->
 <template>
-  <div id="map" style="height: 85vh; width: 100vw;"></div>
-</template>
+  <div id="map" style="height: 60vh; width: 100vw; display: flex; justify-content: center; align-items: center;"></div>
+</template> 
 
 <script>
 import { ref, onMounted } from 'vue';
