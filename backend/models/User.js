@@ -12,7 +12,8 @@ const UserSchema = new mongoose.Schema({
   city: { type: String },
   state: { type: String },
   country: { type: String },
-  lastUpdated: { type: Date, default: Date.now }
+  lastUpdated: { type: Date, default: Date.now }, 
+  ip: { type: String },
 });
 
 module.exports = mongoose.model('User', UserSchema);
