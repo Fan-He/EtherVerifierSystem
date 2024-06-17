@@ -2,7 +2,7 @@
 .home-view {
   display: flex;
   flex-direction: column;
-  height: 80vh;
+  height: 70vh;
   margin-top: 20px;
   margin-bottom: 20px;
 }
@@ -12,17 +12,19 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 70%;
+  height: 60%;
 }
 
 .square-content {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 200px; /* Updated width to 100px */
-  height: 200px; /* Updated height to 100px */
+  width: 180px; 
+  height: 180px; 
   background-color: lightblue;
-  border-radius: 50%;
+  border-radius: 50%
+  
+  ;
 }
 
 .square-link {
