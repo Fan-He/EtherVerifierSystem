@@ -6,7 +6,7 @@ const { ethers } = require('ethers');
 
 exports.register = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, identity } = req.body;
 
     // Check if address is provided
     let walletAddress = req.body.walletAddress || null;
@@ -43,7 +43,7 @@ exports.register = async (req, res) => {
       privateKey,
       walletAddress,
       walletPrivateKey, 
-      identity: 'verifier'
+      identity
     });
 
     await user.save();

@@ -5,6 +5,11 @@
         <input v-model="username" placeholder="Username" required />
         <input v-model="email" type="email" placeholder="Email" required />
         <input v-model="password" type="password" placeholder="Password" required />
+        <select v-model="identity" required>
+          <option value="" disabled selected>Select Identity</option>
+          <option value="verifier">Verifier</option>
+          <option value="provider">Provider</option>
+        </select>
         <input v-model="walletAddress" placeholder="Wallet Address (optional)" />
         <button type="submit">Register</button>
       </form>
@@ -32,12 +37,14 @@
               username: this.username,
               email: this.email,
               password: this.password,
+              identity: this.identity, 
               walletAddress: this.walletAddress
             });
           } else {
             await axios.post('/api/auth/register', {
               username: this.username,
               email: this.email,
+              identity: this.identity,
               password: this.password
             });
           }
