@@ -130,4 +130,16 @@ exports.switchIdentity = async (req, res) => {
   }
 };
 
+exports.getIdentityCounts = async (req, res) => {
+  try {
+    const providerCount = await User.countDocuments({ identity: 'provider' });
+    const verifierCount = await User.countDocuments({ identity: 'verifier' });
+
+    res.json({ providerCount, verifierCount });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
 

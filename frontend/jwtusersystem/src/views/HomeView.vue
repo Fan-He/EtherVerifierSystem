@@ -86,10 +86,69 @@
   background-color: lightgreen;
 }
 
+.identity-count{
+  font-size: 28px;
+  color: whitesmoke;
+}
+
 
 </style>
 
+
 <template>
+  <div class="home-view">
+    <p class="identity-text">Your identity is: {{ identity }}</p>
+    <div class="upper-square">
+      <div class="square-content">
+        <p class="identity-count">Providers: {{ providerCount }}</p>
+      </div>
+    </div>
+    <div class="lower-square">
+      <div class="square-content">
+        <p class="identity-count">Verifiers: {{ verifierCount }}</p>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import axios from 'axios';
+
+export default {
+  data() {
+    return {
+      user: {},
+      providerCount: 0,
+      verifierCount: 0,
+    };
+  },
+  async created() {
+    try {
+      const userResponse = await axios.get('/api/auth/profile', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      this.user = userResponse.data;
+      this.identity = userResponse.data.identity;
+
+      const countsResponse = await axios.get('/api/auth/identity-counts', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      this.providerCount = countsResponse.data.providerCount;
+      this.verifierCount = countsResponse.data.verifierCount;
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  }
+};
+</script>
+
+
+
+<!-- <template>
   <div class="home-view">
     <p class="identity-text">Your current identity is: {{ identity }}</p>
     <div class="upper-square">
@@ -165,4 +224,4 @@ export default {
     }
   }
 };
-</script>
+</script> -->
