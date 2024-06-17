@@ -5,7 +5,7 @@
         <input v-model="username" placeholder="Username" required />
         <input v-model="email" type="email" placeholder="Email" required />
         <input v-model="password" type="password" placeholder="Password" required />
-        <select v-model="identity" required>
+        <select class="select-box" v-model="identity" placeholder="Select Identity" required>
           <option value="" disabled selected>Select Identity</option>
           <option value="verifier">Verifier</option>
           <option value="provider">Provider</option>
@@ -81,6 +81,10 @@
   width: 300px;
   max-width: 90%;
   margin-bottom: 20px;
+}
+
+.select-box {
+  width: 200px;
 }
 
 @media (max-width: 600px) {
