@@ -15,7 +15,7 @@ exports.register = async (req, res) => {
     // Check if email already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: 'Email already in use' });
+      return res.status(400).json({ error: 'Email already in use' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -58,12 +58,12 @@ exports.login = async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: 'Invalid email or password' });
+      return res.status(400).json({ error: 'Invalid email or password' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid email or password' });
+      return res.status(400).json({ error: 'Invalid email or password' });
     }
     console.log('input password: ', req.body.password)
     const token = jwt.sign({ id: user._id, tempPassword: req.body.password }, process.env.JWT_SECRET, { expiresIn: '1h' });
@@ -100,7 +100,7 @@ exports.switchIdentity = async (req, res) => {
     // const email = req.params.email;
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: 'Identity User not found' });
+      return res.status(400).json({ error: 'Identity User not found' });
     }
     user.identity = newIdentity;
     await user.save();
