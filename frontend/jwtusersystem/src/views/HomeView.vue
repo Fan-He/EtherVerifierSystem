@@ -142,7 +142,9 @@ export default {
       this.providerCount = countsResponse.data.providerCount;
       this.verifierCount = countsResponse.data.verifierCount;
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error(error);
+      alert("Please Login");
+      this.$router.push('/login');
     }
   }
 };
