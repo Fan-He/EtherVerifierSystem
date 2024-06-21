@@ -1,5 +1,5 @@
 const express = require('express');
-const { register, login, getProfile, getUserProfileByEmail, switchIdentity, getIdentityCounts, requestRandomNumber, checkRequestStatus } = require('../controllers/authController');
+const { register, login, getProfile, getUserProfileByEmail, switchIdentity, getIdentityCounts, requestRandomNumber, checkRequestFulfillment, getLatestRandomNumber } = require('../controllers/authController');
 const authMiddleware = require('../middleware/authMiddleware');
 const updateUserLocation = require('../middleware/updateUserLocation');
 
@@ -12,7 +12,8 @@ router.get('/profile/email/:email', authMiddleware, updateUserLocation, getUserP
 //router.post('/switch-identity', authMiddleware, updateUserLocation, switchIdentity);
 router.get('/identity-counts', authMiddleware, getIdentityCounts);
 router.post('/request-random-number', authMiddleware, requestRandomNumber);
-router.get('/check-request-status/:requestId', authMiddleware, checkRequestStatus);
+router.get('/check-request-fulfillment', authMiddleware, checkRequestFulfillment);
+router.get('/latest-random-number', authMiddleware, getLatestRandomNumber);
 
 
 module.exports = router;

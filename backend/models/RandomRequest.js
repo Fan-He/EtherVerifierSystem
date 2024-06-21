@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 const RandomRequestSchema = new mongoose.Schema({
   requestId: { type: String, required: true, unique: true },
-  randomNumber: { type: Number },
+  randomNumber: { type: String }, // Store as string to handle BigInt
   fulfilled: { type: Boolean, default: false },
   timestamp: { type: Date, default: Date.now }
 });

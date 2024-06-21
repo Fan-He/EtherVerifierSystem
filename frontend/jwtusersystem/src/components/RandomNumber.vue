@@ -2,8 +2,7 @@
   <div>
     <button @click="generateRandomNumber">Generate Random Number</button>
     <p v-if="txHash">Transaction Hash: {{ txHash }}</p>
-    <p v-if="requestId">Request ID: {{ requestId }}</p>
-    <p v-if="randomWords">Random Words: {{ randomWords }}</p>
+    <p v-if="randomNumber !== null">Random Number: {{ randomNumber }}</p>
   </div>
 </template>
 
@@ -16,8 +15,7 @@ export default {
   data() {
     return {
       txHash: '',
-      requestId: '',
-      randomWords: ''
+      randomNumber: null,
     };
   },
   computed: {
@@ -40,29 +38,24 @@ export default {
           headers: { Authorization: `Bearer ${token}` }
         });
         this.txHash = response.data.txHash;
-        this.requestId = response.data.requestId;
-        this.checkRequestStatus(this.requestId);
+        this.checkFulfillmentStatus();
       } catch (error) {
         console.error(error);
       }
     },
-    async checkRequestStatus(requestId) {
-      // Wait for some time before checking the status
-      setTimeout(async () => {
+    async checkFulfillmentStatus() {
+      setInterval(async () => {
         try {
           const token = localStorage.getItem('token');
-          const response = await axios.get(`/api/auth/check-request-status/${requestId}`, {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
+          await axios.get('/api/auth/check-request-fulfillment', {
+            headers: { Authorization: `Bearer ${token}` }
           });
-          this.randomWords = response.data.randomWords.join(', ');
+          const response = await axios.get('/api/auth/latest-random-number', {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          this.randomNumber = response.data.randomNumber;
         } catch (error) {
-          if (error.response && error.response.status === 404) {
-            this.checkRequestStatus(requestId);
-          } else {
-            console.error(error);
-          }
+          console.error(error);
         }
       }, 30000); // Check every 30 seconds
     },
@@ -85,6 +78,9 @@ export default {
       }
       return null;
     }
+  },
+  mounted() {
+    this.checkFulfillmentStatus(); // Automatically check fulfillment status on mount
   }
 };
 </script>

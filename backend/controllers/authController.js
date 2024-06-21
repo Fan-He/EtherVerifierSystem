@@ -3,8 +3,10 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const openpgp = require('openpgp');
 const { ethers } = require('ethers');
-const { requestRandomNumber, getRandomNumber } = require('../smart-contract/vrfIntegration');
+const { checkRequestFulfillment, getLatestRandomNumber } = require('../smart-contract/vrfIntegration');
 const Group = require('../models/Group');
+const RandomRequest = require('../models/RandomRequest');
+
 
 const TOTAL_SELECTION = 50; // Total number of users to select
 const VERIFIER_GROUP_COUNT = 10; // Number of verifiers per group 
@@ -150,21 +152,37 @@ exports.getIdentityCounts = async (req, res) => {
 
 exports.requestRandomNumber = async (req, res) => {
   try {
-    const { account } = req.body;
+    const account = req.body.account;
     const receipt = await requestRandomNumber(account);
-    const requestId = await contract.methods.lastRequestId().call();
-    res.json({ txHash: receipt.transactionHash, requestId });
+    res.json({ txHash: receipt.transactionHash });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
 
-exports.checkRequestStatus = async (req, res) => {
+exports.checkRequestFulfillment = async (req, res) => {
   try {
-    const { requestId } = req.params;
-    const randomWords = await getRandomNumber(requestId);
-    res.json({ randomWords });
+    const requests = await RandomRequest.find({ fulfilled: false });
+    console.log('Pending requests:', requests);
+    
+    for (const request of requests) {
+      const randomNumber = await checkRequestFulfillment(request.requestId);
+      console.log('Fulfillment result for request', request.requestId, ':', randomNumber);
+    }
+    
+    res.json({ message: 'Checked fulfillment status for pending requests' });
   } catch (error) {
+    console.error('Error in checkRequestFulfillment:', error);
+    res.status(400).json({ error: error.message });
+  }
+};
+
+exports.getLatestRandomNumber = async (req, res) => {
+  try {
+    const randomNumber = await getLatestRandomNumber();
+    res.json({ randomNumber });
+  } catch (error) {
+    console.error('Error in getLatestRandomNumber:', error);
     res.status(400).json({ error: error.message });
   }
 };
