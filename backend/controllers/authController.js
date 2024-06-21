@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const openpgp = require('openpgp');
 const { ethers } = require('ethers');
-const { checkRequestFulfillment, getLatestRandomNumber } = require('../smart-contract/vrfIntegration');
+const { requestRandomNumber, checkRequestFulfillment, getLatestRandomNumber } = require('../smart-contract/vrfIntegration');
 const Group = require('../models/Group');
 const RandomRequest = require('../models/RandomRequest');
 
@@ -151,6 +151,7 @@ exports.getIdentityCounts = async (req, res) => {
 
 
 exports.requestRandomNumber = async (req, res) => {
+  console.log("-------request random number from controller--------------");
   try {
     const account = req.body.account;
     const receipt = await requestRandomNumber(account);

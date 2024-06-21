@@ -7,6 +7,7 @@ const contractAddress = '0xf0D54f316415de39b49aB01b0D2ae1999C727d0f';
 const contract = new web3.eth.Contract(abi, contractAddress);
 
 const requestRandomNumber = async (account) => {
+  console.log("------------enter requestRandomNumber in integration---------------")
   try {
     const tx = contract.methods.requestRandomWords();
     const gas = await tx.estimateGas({ from: account });
