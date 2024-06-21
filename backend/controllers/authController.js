@@ -165,13 +165,19 @@ exports.checkRequestFulfillment = async (req, res) => {
   try {
     const requests = await RandomRequest.find({ fulfilled: false });
     console.log('Pending requests:', requests);
-    
+
+    let fulfillmentStatus = requests.length > 0 ? true : false;
+
     for (const request of requests) {
       const randomNumber = await checkRequestFulfillment(request.requestId);
       console.log('Fulfillment result for request', request.requestId, ':', randomNumber);
+      if (!randomNumber) {
+        fulfillmentStatus = false;
+        break;
+      }
     }
-    
-    res.json({ message: 'Checked fulfillment status for pending requests' });
+
+    res.json({ message: 'Checked fulfillment status for pending requests', fulfillmentStatus });
   } catch (error) {
     console.error('Error in checkRequestFulfillment:', error);
     res.status(400).json({ error: error.message });

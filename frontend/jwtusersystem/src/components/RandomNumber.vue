@@ -16,6 +16,7 @@ export default {
     return {
       txHash: '',
       randomNumber: null,
+      checkInterval: null,
     };
   },
   computed: {
@@ -38,26 +39,37 @@ export default {
           headers: { Authorization: `Bearer ${token}` }
         });
         this.txHash = response.data.txHash;
-        this.checkFulfillmentStatus();
+        this.startCheckingFulfillment();
       } catch (error) {
         console.error(error);
       }
     },
-    async checkFulfillmentStatus() {
-      setInterval(async () => {
+    async startCheckingFulfillment() {
+      this.checkInterval = setInterval(async () => {
         try {
           const token = localStorage.getItem('token');
-          await axios.get('/api/auth/check-request-fulfillment', {
+          const response = await axios.get('/api/auth/check-request-fulfillment', {
             headers: { Authorization: `Bearer ${token}` }
           });
-          const response = await axios.get('/api/auth/latest-random-number', {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          this.randomNumber = response.data.randomNumber;
+          if (response.data.fulfillmentStatus) {
+            clearInterval(this.checkInterval);
+            await this.fetchLatestRandomNumber();
+          }
         } catch (error) {
           console.error(error);
         }
-      }, 30000); // Check every 30 seconds
+      }, 10000); // Check every 10 seconds
+    },
+    async fetchLatestRandomNumber() {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('/api/auth/latest-random-number', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        this.randomNumber = response.data.randomNumber;
+      } catch (error) {
+        console.error(error);
+      }
     },
     async checkMetamaskConnection() {
       if (window.ethereum) {
@@ -80,7 +92,7 @@ export default {
     }
   },
   mounted() {
-    this.checkFulfillmentStatus(); // Automatically check fulfillment status on mount
+    this.fetchLatestRandomNumber(); // Fetch the latest random number on mount
   }
 };
 </script>
