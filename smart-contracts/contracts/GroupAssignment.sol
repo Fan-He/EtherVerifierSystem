@@ -1,68 +1,117 @@
 // SPDX-License-Identifier: MIT
+// An example of a consumer contract that relies on a subscription for funding.
 pragma solidity ^0.8.7;
 
-import "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol"; 
-import "@chainlink/contracts/src/v0.8/vrf/interfaces/VRFCoordinatorV2Interface.sol"; 
-import "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol"; 
+import {VRFConsumerBaseV2Plus} from "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol";
+import {VRFV2PlusClient} from "@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol";
 
-contract GroupAssignment is VRFConsumerBaseV2, ConfirmedOwner {
-    VRFCoordinatorV2Interface private coordinator;
+/**
+ * Request testnet LINK and ETH here: https://faucets.chain.link/
+ * Find information on LINK Token Contracts and get the latest ETH and LINK faucets here: https://docs.chain.link/docs/link-token-contracts/
+ */
 
-    // Chainlink VRF related variables
-    bytes32 private keyHash;
-    uint256 private fee;
-    uint64 private s_subscriptionId;
+/**
+ * THIS IS AN EXAMPLE CONTRACT THAT USES HARDCODED VALUES FOR CLARITY.
+ * THIS IS AN EXAMPLE CONTRACT THAT USES UN-AUDITED CODE.
+ * DO NOT USE THIS CODE IN PRODUCTION.
+ */
+
+contract SubscriptionConsumer is VRFConsumerBaseV2Plus {
+    event RequestSent(uint256 requestId, uint32 numWords);
+    event RequestFulfilled(uint256 requestId, uint256[] randomWords);
+
+    struct RequestStatus {
+        bool fulfilled; // whether the request has been successfully fulfilled
+        bool exists; // whether a requestId exists
+        uint256[] randomWords;
+    }
+    mapping(uint256 => RequestStatus)
+        public s_requests; /* requestId --> requestStatus */
+
+    // Your subscription ID.
+    uint256 public s_subscriptionId;
+
+    // Past request IDs.
+    uint256[] public requestIds;
     uint256 public lastRequestId;
 
-    // User grouping related variables
-    uint256 public constant GROUP_SIZE = 10;  
-    address[] public users;
-    mapping(uint256 => address[]) public groups;  
+    // The gas lane to use, which specifies the maximum gas price to bump to.
+    // For a list of available gas lanes on each network,
+    // see https://docs.chain.link/docs/vrf/v2-5/supported-networks
+    bytes32 public keyHash =
+        0x787d74caea10b2b357790d5b5247c2f63d1d91572a9846f780606e4d953677ae;
 
-    event UsersAssigned(uint256 requestId, address[] usersAssigned);
+    // Depends on the number of requested values that you want sent to the
+    // fulfillRandomWords() function. Storing each word costs about 20,000 gas,
+    // so 100,000 is a safe default for this example contract. Test and adjust
+    // this limit based on the network that you select, the size of the request,
+    // and the processing of the callback request in the fulfillRandomWords()
+    // function.
+    uint32 public callbackGasLimit = 100000;
 
-    constructor(uint64 subscriptionId)
-        VRFConsumerBaseV2(0x8103B0A8A00be2DDC778e6e7eaa21791Cd364625) // VRF Coordinator address
-        ConfirmedOwner(msg.sender)
-    {
-        coordinator = VRFCoordinatorV2Interface(0x8103B0A8A00be2DDC778e6e7eaa21791Cd364625);
-        keyHash = 0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c;
-        fee = 0.25 * 10 ** 18;  // 0.25 LINK
+    // The default is 3, but you can set this higher.
+    uint16 public requestConfirmations = 3;
+
+    // For this example, retrieve 2 random values in one request.
+    // Cannot exceed VRFCoordinatorV2_5.MAX_NUM_WORDS.
+    uint32 public numWords = 2;
+
+    /**
+     * HARDCODED FOR SEPOLIA
+     * COORDINATOR: 0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B
+     */
+    constructor(
+        uint256 subscriptionId
+    ) VRFConsumerBaseV2Plus(0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B) {
         s_subscriptionId = subscriptionId;
     }
 
-    // Function to request random numbers
-    function requestRandomUsers() external onlyOwner {
-        uint256 requestId = coordinator.requestRandomWords(
-            keyHash,
-            s_subscriptionId,
-            3,  // requestConfirmations
-            200000,  // callbackGasLimit
-            1  // numWords
+    // Assumes the subscription is funded sufficiently.
+    // @param enableNativePayment: Set to `true` to enable payment in native tokens, or
+    // `false` to pay in LINK
+    function requestRandomWords(
+    ) external onlyOwner returns (uint256 requestId) {
+        // Will revert if subscription is not set and funded.
+        requestId = s_vrfCoordinator.requestRandomWords(
+            VRFV2PlusClient.RandomWordsRequest({
+                keyHash: keyHash,
+                subId: s_subscriptionId,
+                requestConfirmations: requestConfirmations,
+                callbackGasLimit: callbackGasLimit,
+                numWords: numWords,
+                extraArgs: VRFV2PlusClient._argsToBytes(
+                    VRFV2PlusClient.ExtraArgsV1({
+                        nativePayment: false
+                    })
+                )
+            })
         );
+        s_requests[requestId] = RequestStatus({
+            randomWords: new uint256[](0),
+            exists: true,
+            fulfilled: false
+        });
+        requestIds.push(requestId);
         lastRequestId = requestId;
+        emit RequestSent(requestId, numWords);
+        return requestId;
     }
 
-    // Callback function used by VRF Coordinator
-    function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
-        uint256 randomIndex = randomWords[0] % users.length;
-        address[] memory selectedUsers = new address[](GROUP_SIZE);
-
-        for (uint256 i = 0; i < GROUP_SIZE; i++) {
-            selectedUsers[i] = users[(randomIndex + i) % users.length];
-        }
-
-        groups[requestId] = selectedUsers;
-        emit UsersAssigned(requestId, selectedUsers);
+    function fulfillRandomWords(
+        uint256 _requestId,
+        uint256[] calldata _randomWords
+    ) internal override {
+        require(s_requests[_requestId].exists, "request not found");
+        s_requests[_requestId].fulfilled = true;
+        s_requests[_requestId].randomWords = _randomWords;
+        emit RequestFulfilled(_requestId, _randomWords);
     }
 
-    // Function to add users (this can be controlled via access modifiers as necessary)
-    function addUser(address _user) public {
-        users.push(_user);
-    }
-
-    // Function to retrieve assigned users from a particular request
-    function getAssignedUsers(uint256 requestId) public view returns (address[] memory) {
-        return groups[requestId];
+    function getRequestStatus(
+        uint256 _requestId
+    ) external view returns (bool fulfilled, uint256[] memory randomWords) {
+        require(s_requests[_requestId].exists, "request not found");
+        RequestStatus memory request = s_requests[_requestId];
+        return (request.fulfilled, request.randomWords);
     }
 }

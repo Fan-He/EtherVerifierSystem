@@ -1,9 +1,9 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
-    "/home/xiaofan/TryProjects/JWTUserSystem/smart-contracts/contracts/GroupAssignment.sol": {
-      "lastModificationDate": 1718022497341,
-      "contentHash": "e8b1516509414101981987de5d6f5ad2",
+    "/var/www/EtherVerifierSystem/smart-contracts/contracts/GroupAssignment.sol": {
+      "lastModificationDate": 1718937484777,
+      "contentHash": "64b26ba27046714b23ae45db95116ba1",
       "sourceName": "contracts/GroupAssignment.sol",
       "solcConfig": {
         "version": "0.8.7",
@@ -29,19 +29,18 @@
         }
       },
       "imports": [
-        "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol",
-        "@chainlink/contracts/src/v0.8/vrf/interfaces/VRFCoordinatorV2Interface.sol",
-        "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol"
+        "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol",
+        "@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol"
       ],
       "versionPragmas": [
         "^0.8.7"
       ],
       "artifacts": [
-        "GroupAssignment"
+        "SubscriptionConsumer"
       ]
     },
-    "/home/xiaofan/TryProjects/JWTUserSystem/smart-contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol": {
-      "lastModificationDate": 1718020835771,
+    "/var/www/EtherVerifierSystem/smart-contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol": {
+      "lastModificationDate": 1718075137597,
       "contentHash": "06f8ab6bd949cea1abd42940d7965d65",
       "sourceName": "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol",
       "solcConfig": {
@@ -75,43 +74,8 @@
         "VRFConsumerBaseV2"
       ]
     },
-    "/home/xiaofan/TryProjects/JWTUserSystem/smart-contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/interfaces/VRFCoordinatorV2Interface.sol": {
-      "lastModificationDate": 1718020835771,
-      "contentHash": "c4963e3862ffee2974cc634689745531",
-      "sourceName": "@chainlink/contracts/src/v0.8/vrf/interfaces/VRFCoordinatorV2Interface.sol",
-      "solcConfig": {
-        "version": "0.8.7",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "VRFCoordinatorV2Interface"
-      ]
-    },
-    "/home/xiaofan/TryProjects/JWTUserSystem/smart-contracts/node_modules/@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol": {
-      "lastModificationDate": 1718020835451,
+    "/var/www/EtherVerifierSystem/smart-contracts/node_modules/@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol": {
+      "lastModificationDate": 1718075137581,
       "contentHash": "1ed782c1e3014a255f9171aefc3cdde3",
       "sourceName": "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol",
       "solcConfig": {
@@ -147,8 +111,43 @@
         "ConfirmedOwner"
       ]
     },
-    "/home/xiaofan/TryProjects/JWTUserSystem/smart-contracts/node_modules/@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwnerWithProposal.sol": {
-      "lastModificationDate": 1718020835451,
+    "/var/www/EtherVerifierSystem/smart-contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/interfaces/VRFCoordinatorV2Interface.sol": {
+      "lastModificationDate": 1718075137601,
+      "contentHash": "c4963e3862ffee2974cc634689745531",
+      "sourceName": "@chainlink/contracts/src/v0.8/vrf/interfaces/VRFCoordinatorV2Interface.sol",
+      "solcConfig": {
+        "version": "0.8.7",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "VRFCoordinatorV2Interface"
+      ]
+    },
+    "/var/www/EtherVerifierSystem/smart-contracts/node_modules/@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwnerWithProposal.sol": {
+      "lastModificationDate": 1718075137581,
       "contentHash": "f29daa205dcbdc6037de8e38e5a34158",
       "sourceName": "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwnerWithProposal.sol",
       "solcConfig": {
@@ -184,8 +183,8 @@
         "ConfirmedOwnerWithProposal"
       ]
     },
-    "/home/xiaofan/TryProjects/JWTUserSystem/smart-contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/IOwnable.sol": {
-      "lastModificationDate": 1718020835611,
+    "/var/www/EtherVerifierSystem/smart-contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/IOwnable.sol": {
+      "lastModificationDate": 1718075137581,
       "contentHash": "b3ae9b7345205a0a65f3e0f89c176d88",
       "sourceName": "@chainlink/contracts/src/v0.8/shared/interfaces/IOwnable.sol",
       "solcConfig": {
@@ -217,6 +216,227 @@
       ],
       "artifacts": [
         "IOwnable"
+      ]
+    },
+    "/var/www/EtherVerifierSystem/smart-contracts/contracts/Old_Contract.sol": {
+      "lastModificationDate": 1718699845157,
+      "contentHash": "a7ad4aedc3b928fdb262514c54cc287a",
+      "sourceName": "contracts/Old_Contract.sol",
+      "solcConfig": {
+        "version": "0.8.7",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol",
+        "@chainlink/contracts/src/v0.8/vrf/interfaces/VRFCoordinatorV2Interface.sol",
+        "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.7"
+      ],
+      "artifacts": [
+        "OldContract"
+      ]
+    },
+    "/var/www/EtherVerifierSystem/smart-contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol": {
+      "lastModificationDate": 1718075137601,
+      "contentHash": "b79fe960e5c1708710e8903cb2596a05",
+      "sourceName": "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol",
+      "solcConfig": {
+        "version": "0.8.7",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./interfaces/IVRFCoordinatorV2Plus.sol",
+        "./interfaces/IVRFMigratableConsumerV2Plus.sol",
+        "../../shared/access/ConfirmedOwner.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.4"
+      ],
+      "artifacts": [
+        "VRFConsumerBaseV2Plus"
+      ]
+    },
+    "/var/www/EtherVerifierSystem/smart-contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol": {
+      "lastModificationDate": 1718075137601,
+      "contentHash": "ea0b191b25011f4be7f27a1ccf579259",
+      "sourceName": "@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+      "solcConfig": {
+        "version": "0.8.7",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.4"
+      ],
+      "artifacts": [
+        "VRFV2PlusClient"
+      ]
+    },
+    "/var/www/EtherVerifierSystem/smart-contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFCoordinatorV2Plus.sol": {
+      "lastModificationDate": 1718075137601,
+      "contentHash": "a40c594759ed60ae8b25c9878deb5190",
+      "sourceName": "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFCoordinatorV2Plus.sol",
+      "solcConfig": {
+        "version": "0.8.7",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../libraries/VRFV2PlusClient.sol",
+        "./IVRFSubscriptionV2Plus.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IVRFCoordinatorV2Plus"
+      ]
+    },
+    "/var/www/EtherVerifierSystem/smart-contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFMigratableConsumerV2Plus.sol": {
+      "lastModificationDate": 1718075137601,
+      "contentHash": "c46a904727c33fe3465e4cf8957610c0",
+      "sourceName": "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFMigratableConsumerV2Plus.sol",
+      "solcConfig": {
+        "version": "0.8.7",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IVRFMigratableConsumerV2Plus"
+      ]
+    },
+    "/var/www/EtherVerifierSystem/smart-contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFSubscriptionV2Plus.sol": {
+      "lastModificationDate": 1718075137601,
+      "contentHash": "3876d187ac359ff043ea8f248fe05800",
+      "sourceName": "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFSubscriptionV2Plus.sol",
+      "solcConfig": {
+        "version": "0.8.7",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IVRFSubscriptionV2Plus"
       ]
     }
   }

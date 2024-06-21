@@ -7,6 +7,8 @@ import SendMessage from '../components/SendMessage.vue';
 import Inbox from '../components/Inbox.vue';
 import Board from '../views/BoardView.vue';
 import MapView from '../views/MapView.vue';
+import AssignGroup from '../components/AssignGroups.vue';
+import RandomNumber from '../components/RandomNumber.vue'; 
 
 const routes = [
   { path: '/', component: Home },
@@ -16,7 +18,10 @@ const routes = [
   { path: '/send-message', component: SendMessage },
   { path: '/inbox', component: Inbox }, 
   { path: '/board', component: Board }, 
-  { path: '/map', name: 'map', component: MapView }
+  { path: '/map', name: 'map', component: MapView }, 
+  { path: '/assign-group', name: 'assign-group', component: AssignGroup }, 
+  { path: '/random-number', name: 'RandomNumber', component: RandomNumber }
+
 ];
 
 const router = createRouter({

@@ -3,6 +3,12 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const openpgp = require('openpgp');
 const { ethers } = require('ethers');
+const { requestRandomNumber, getRandomNumber } = require('../smart-contract/vrfIntegration');
+const Group = require('../models/Group');
+
+const TOTAL_SELECTION = 50; // Total number of users to select
+const VERIFIER_GROUP_COUNT = 10; // Number of verifiers per group 
+const PROVIDER_GROUP_COUNT = 1; // Number of providers per group
 
 exports.register = async (req, res) => {
   try {
@@ -142,4 +148,24 @@ exports.getIdentityCounts = async (req, res) => {
 };
 
 
+exports.requestRandomNumber = async (req, res) => {
+  try {
+    const { account } = req.body;
+    const receipt = await requestRandomNumber(account);
+    const requestId = await contract.methods.lastRequestId().call();
+    res.json({ txHash: receipt.transactionHash, requestId });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+exports.checkRequestStatus = async (req, res) => {
+  try {
+    const { requestId } = req.params;
+    const randomWords = await getRandomNumber(requestId);
+    res.json({ randomWords });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
 

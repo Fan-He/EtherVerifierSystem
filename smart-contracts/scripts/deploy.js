@@ -1,21 +1,19 @@
+// scripts/deploy.js
 const { ethers } = require("hardhat");
 
 async function main() {
-    const [deployer] = await ethers.getSigners();
-    const chainlinkSubscriptionId = 1;  // Replace with your actual Chainlink subscription ID
+    const SubscriptionConsumer = await ethers.getContractFactory("SubscriptionConsumer");
+    const subscriptionId = ethers.BigNumber.from("105306430092655140506577265748278780331152699016007072558419937032841393270693"); // Replace with your actual subscription ID
+    const contract = await SubscriptionConsumer.deploy(subscriptionId);
 
-    console.log("Deploying contracts with the account:", deployer.address);
-    console.log("Account balance:", (await deployer.getBalance()).toString());
+    await contract.deployed();
 
-    const GroupAssignment = await ethers.getContractFactory("GroupAssignment");
-    const groupAssignment = await GroupAssignment.deploy(chainlinkSubscriptionId);
-
-    await groupAssignment.deployed();
-
-    console.log("GroupAssignment deployed to:", groupAssignment.address);
+    console.log("SubscriptionConsumer deployed to:", contract.address);
 }
 
-main().catch((error) => {
-    console.error(error);
-    process.exit(1);
-});
+main()
+    .then(() => process.exit(0))
+    .catch((error) => {
+        console.error(error);
+        process.exit(1);
+    });
