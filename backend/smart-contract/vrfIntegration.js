@@ -7,7 +7,7 @@ const contractAddress = '0xf0D54f316415de39b49aB01b0D2ae1999C727d0f';
 const contract = new web3.eth.Contract(abi, contractAddress);
 
 const requestRandomNumber = async (account) => {
-  console.log("------------enter requestRandomNumber in integration---------------")
+  console.log("-------request random number from vrfIntegration--------------");
   try {
     const tx = contract.methods.requestRandomWords();
     const gas = await tx.estimateGas({ from: account });
@@ -38,23 +38,28 @@ const requestRandomNumber = async (account) => {
   }
 };
 
-const checkRequestFulfillment = async (requestId) => {
-  const events = await contract.getPastEvents('RequestFulfilled', {
-    filter: { requestId },
-    fromBlock: 0,
-    toBlock: 'latest'
-  });
+const checkRequestFulfillment = async () => {
+  console.log("-------check request fulfillment from vrfIntegration--------------")
+  const requests = await RandomRequest.find({ fulfilled: false });
 
-  if (events.length > 0) {
-    const randomNumber = events[0].returnValues.randomWords[0].toString(); // Convert BigInt to string
-    await RandomRequest.findOneAndUpdate({ requestId }, { randomNumber, fulfilled: true });
-    return randomNumber;
+  for (const request of requests) {
+    const events = await contract.getPastEvents('RequestFulfilled', {
+      filter: { requestId: request.requestId },
+      fromBlock: 0,
+      toBlock: 'latest'
+    });
+
+    if (events.length > 0) {
+      const randomNumber = events[0].returnValues.randomWords[0].toString(); // Convert BigInt to string
+      await RandomRequest.findOneAndUpdate({ requestId: request.requestId }, { randomNumber, fulfilled: true });
+      console.log(`Request ${request.requestId} fulfilled with random number ${randomNumber}`);
+    }
   }
-  return null;
 };
 
 const getLatestRandomNumber = async () => {
-  const latestRequest = await RandomRequest.findOne({ fulfilled: true }).sort({ timestamp: -1 });
+  console.log("-------get latest unused number from vrfIntegration--------------")
+  const latestRequest = await RandomRequest.findOne({ used: false }).sort({ timestamp: 1 });
   return latestRequest ? latestRequest.randomNumber : null;
 };
 

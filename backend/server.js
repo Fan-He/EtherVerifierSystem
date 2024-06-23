@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const authRoutes = require('./routes/authRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 const locationRoutes = require('./routes/locationRoutes'); 
+const randomNumberRoutes = require('./routes/randomNumberRoutes');
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ mongoose.connect(Mongo_uri, {
 app.use('/api/auth', authRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/location', locationRoutes);
+app.use('/api/randomNumber', randomNumberRoutes);
 
 
 app.use((req, res, next) => {
@@ -36,3 +38,5 @@ app.use((req, res, next) => {
 
 const PORT = process.env.PORT || 5005;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+require('/var/www/EtherVerifierSystem/backend/maintainers/ramdomNumberMaintainer.js');

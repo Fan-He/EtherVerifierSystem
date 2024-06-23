@@ -11,9 +11,9 @@ router.get('/profile', authMiddleware, updateUserLocation, getProfile);
 router.get('/profile/email/:email', authMiddleware, updateUserLocation, getUserProfileByEmail);
 //router.post('/switch-identity', authMiddleware, updateUserLocation, switchIdentity);
 router.get('/identity-counts', authMiddleware, getIdentityCounts);
-router.post('/request-random-number', authMiddleware, requestRandomNumber);
-router.get('/check-request-fulfillment', authMiddleware, checkRequestFulfillment);
-router.get('/latest-random-number', authMiddleware, getLatestRandomNumber);
+// router.post('/request-random-number', authMiddleware, requestRandomNumber);
+// router.get('/check-request-fulfillment', authMiddleware, checkRequestFulfillment);
+// router.get('/latest-random-number', authMiddleware, getLatestRandomNumber);
 
 
 module.exports = router;
