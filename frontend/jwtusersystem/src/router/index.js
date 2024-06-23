@@ -9,6 +9,8 @@ import Board from '../views/BoardView.vue';
 import MapView from '../views/MapView.vue';
 import AssignGroup from '../components/AssignGroups.vue';
 import RandomNumber from '../components/RandomNumber.vue'; 
+import GroupDisplay from '../components/GroupDisplay.vue';
+
 
 const routes = [
   { path: '/', component: Home },
@@ -20,8 +22,8 @@ const routes = [
   { path: '/board', component: Board }, 
   { path: '/map', name: 'map', component: MapView }, 
   { path: '/assign-group', name: 'assign-group', component: AssignGroup }, 
-  { path: '/random-number', name: 'RandomNumber', component: RandomNumber }
-
+  { path: '/random-number', name: 'RandomNumber', component: RandomNumber },
+  { path: '/group-display', name: 'GroupDisplay', component: GroupDisplay }
 ];
 
 const router = createRouter({

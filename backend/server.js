@@ -5,6 +5,7 @@ const authRoutes = require('./routes/authRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 const locationRoutes = require('./routes/locationRoutes'); 
 const randomNumberRoutes = require('./routes/randomNumberRoutes');
+const groupRoutes = require('./routes/groupRoutes');
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/location', locationRoutes);
 app.use('/api/randomNumber', randomNumberRoutes);
+app.use('/api/groups', groupRoutes);
 
 
 app.use((req, res, next) => {
