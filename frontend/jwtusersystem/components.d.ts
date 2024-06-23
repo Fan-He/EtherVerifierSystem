@@ -7,7 +7,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    AssignGroups: typeof import('./src/components/AssignGroups.vue')['default']
+    AssignGroup_old: typeof import('./src/components/AssignGroup_old.vue')['default']
     GroupDisplay: typeof import('./src/components/GroupDisplay.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     IconCommunity: typeof import('./src/components/icons/IconCommunity.vue')['default']
