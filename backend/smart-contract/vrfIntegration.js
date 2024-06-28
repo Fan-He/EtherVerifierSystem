@@ -31,7 +31,7 @@ const requestRandomNumber = async (account) => {
     await randomRequest.save();
 
     console.log('Transaction receipt:', receipt);
-    return receipt;
+    return { receipt, requestId };
   } catch (error) {
     console.error('Error requesting random number:', error);
     throw new Error('Error requesting random number');
@@ -63,8 +63,27 @@ const getLatestRandomNumber = async () => {
   return latestRequest ? latestRequest.randomNumber : null;
 };
 
+// Check the fulfillment status of a specific request ID
+const checkSpecificRequestFulfillment = async (requestId) => {
+  console.log(`-------check fulfillment status for request ID ${requestId}--------------`);
+  const events = await contract.getPastEvents('RequestFulfilled', {
+    filter: { requestId },
+    fromBlock: 0,
+    toBlock: 'latest'
+  });
+
+  if (events.length > 0) {
+    const randomNumber = events[0].returnValues.randomWords[0].toString(); // Convert BigInt to string
+    await RandomRequest.findOneAndUpdate({ requestId: requestId }, { randomNumber, fulfilled: true });
+    console.log(`Specific Request ${requestId} fulfilled with random number ${randomNumber}`);
+  }
+
+  return events;
+};
+
 module.exports = {
   requestRandomNumber,
   checkRequestFulfillment,
   getLatestRandomNumber,
+  checkSpecificRequestFulfillment,
 };

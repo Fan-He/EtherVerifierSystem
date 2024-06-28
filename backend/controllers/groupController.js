@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const Group = require('../models/Group');
 const RandomRequest = require('../models/RandomRequest');
+const { requestRandomNumber, checkSpecificRequestFulfillment } = require('../smart-contract/vrfIntegration');
 const crypto = require('crypto');
 
 const NUM_GROUPS = 3; // Number of groups to allocate users into
@@ -38,11 +39,11 @@ const selectUsersBasedOnRuleA = async (randomNumber, verifierCount, providerCoun
 
   const usersWithHashModulo = users.map(user => {
     const hashedAddress = crypto.createHash('sha256').update(user.walletAddress).digest('hex');
-    const moduloValue = parseInt(hashedAddress, 16) % randomNumber;
+    const moduloValue = BigInt(`0x${hashedAddress}`) % BigInt(randomNumber);
     return { user, moduloValue };
   });
 
-  usersWithHashModulo.sort((a, b) => a.moduloValue - b.moduloValue);
+  usersWithHashModulo.sort((a, b) => (a.moduloValue < b.moduloValue ? -1 : 1));
 
   const verifiers = usersWithHashModulo
     .filter(({ user }) => user.identity === 'verifier')
@@ -60,8 +61,8 @@ const selectUsersBasedOnRuleA = async (randomNumber, verifierCount, providerCoun
 // Function to allocate users into groups using Rule B
 const allocateUsersIntoGroups = (verifiers, providers, groupCount, randomNumber) => {
   console.log("-------allocate users into groups using Rule B--------------");
-  const shuffledVerifiers = shuffleArray(verifiers, randomNumber);
-  const shuffledProviders = shuffleArray(providers, randomNumber);
+  const shuffledVerifiers = shuffleArray(verifiers, parseInt(randomNumber));
+  const shuffledProviders = shuffleArray(providers, parseInt(randomNumber));
 
   const groups = Array.from({ length: groupCount }, () => ({ verifiers: [], provider: null }));
 
@@ -83,20 +84,34 @@ const groupUsers = async (req, res) => {
     // Step 0: Clear all existing groups in the database
     await Group.deleteMany({});
 
-    // Step 1: Read the oldest unused random number from the database
-    const randomRequest = await RandomRequest.findOne({ used: false, fulfilled: true }).sort({ timestamp: 1 });
-    if (!randomRequest) {
-      return res.status(404).json({ error: 'No available random number.' });
-    }
-    const randomNumber = parseInt(randomRequest.randomNumber, 10);
+    // Step 1: Request a new Chainlink random number
+    const account = '0x9bB61dcD1A458fFa2d976c78f4a2Aae4f81Da0cc'; // Replace with the actual account to use
+    const { receipt, requestId } = await requestRandomNumber(account);
 
-    // Step 2: Apply Rule A to select users
+    console.log('Transaction receipt:', receipt);
+    console.log('Request ID:', requestId);
+
+    // Step 2: Wait for the specific random request to be fulfilled
+    let fulfilled = false;
+    let randomNumber;
+    while (!fulfilled) {
+      await new Promise(resolve => setTimeout(resolve, 10000)); // Wait for 10 seconds before checking fulfillment status
+      const events = await checkSpecificRequestFulfillment(requestId);
+      if (events.length > 0) {
+        fulfilled = true;
+        randomNumber = events[0].returnValues.randomWords[0];
+      }
+    }
+
+    console.log("Random Number used for allocation:", randomNumber.toString());
+
+    // Step 3: Apply Rule A to select users
     const { verifiers, providers } = await selectUsersBasedOnRuleA(randomNumber, NUM_VERIFIERS, NUM_PROVIDERS);
 
-    // Step 3: Apply Rule B to allocate selected users into groups
+    // Step 4: Apply Rule B to allocate selected users into groups
     const groups = allocateUsersIntoGroups(verifiers, providers, NUM_GROUPS, randomNumber);
 
-    // Step 4: Store the allocated groups into the database
+    // Step 5: Store the allocated groups into the database
     const groupPromises = groups.map(async (group, index) => {
       const newGroup = new Group({
         groupId: index + 1,
@@ -108,12 +123,12 @@ const groupUsers = async (req, res) => {
 
     await Promise.all(groupPromises);
 
-    // Mark the random number as used
-    randomRequest.used = true;
-    await randomRequest.save();
+    // Step 6: Update the random request status to used
+    await RandomRequest.findOneAndUpdate({ requestId }, { used: true });
 
-    res.status(201).json({ message: 'Groups allocated successfully', groups });
+    res.status(201).json({ message: 'Groups allocated successfully', groups, randomNumber: randomNumber.toString() });
   } catch (error) {
+    console.error('Error in groupUsers:', error);
     res.status(500).json({ error: error.message });
   }
 };
