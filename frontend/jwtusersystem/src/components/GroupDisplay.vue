@@ -2,9 +2,6 @@
   <div>
     <h1>Allocated Groups</h1>
     <button @click="fetchGroups">Fetch Groups</button>
-    <div v-if="randomNumber">
-      <p><strong>Random Number Used:</strong> {{ randomNumber }}</p>
-    </div>
     <div v-if="groups.length > 0">
       <div v-for="group in groups" :key="group.groupId" class="group">
         <h2>Group {{ group.groupId }}</h2>
@@ -12,6 +9,7 @@
         <ul>
           <li v-for="verifier in group.verifiers" :key="verifier._id">{{ verifier.username }}</li>
         </ul>
+        <p><strong>Random Number Used:</strong> {{ group.randomNumber }}</p>
       </div>
     </div>
     <div v-else>
@@ -23,11 +21,12 @@
 <script>
 import axios from 'axios';
 
+axios.defaults.timeout = 600000;
+
 export default {
   data() {
     return {
-      groups: [],
-      randomNumber: null
+      groups: []
     };
   },
   async mounted() {
@@ -44,9 +43,8 @@ export default {
     },
     async fetchGroups() {
       try {
-        const response = await axios.post('/api/groups/allocate-groups');
+        const response = await axios.post('/api/groups/allocate-groups', {}, { timeout: 600000 }); // Set timeout to 10 minutes
         this.groups = response.data.groups;
-        this.randomNumber = response.data.randomNumber;
       } catch (error) {
         console.error('Error fetching groups:', error);
       }
@@ -58,7 +56,7 @@ export default {
 <style>
 .group {
   border: 1px solid #ccc;
-  padding: 1em;
-  margin-bottom: 1em;
+  padding: 1px;
+  margin-bottom: 1px;
 }
 </style>

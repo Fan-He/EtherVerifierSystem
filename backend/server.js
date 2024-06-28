@@ -40,5 +40,7 @@ app.use((req, res, next) => {
 
 const PORT = process.env.PORT || 5005;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// server.timeout = 1000 * 60 * 10; // 10 minutes
 
 // require('/var/www/EtherVerifierSystem/backend/maintainers/ramdomNumberMaintainer.js');

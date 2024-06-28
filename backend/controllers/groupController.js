@@ -116,7 +116,8 @@ const groupUsers = async (req, res) => {
       const newGroup = new Group({
         groupId: index + 1,
         verifiers: group.verifiers.map(user => user._id),
-        provider: group.provider._id
+        provider: group.provider._id, 
+        randomNumber: randomNumber.toString(),
       });
       return newGroup.save();
     });
