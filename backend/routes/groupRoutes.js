@@ -10,7 +10,7 @@ router.post('/allocate-groups', groupUsers);
 // Route to get current groups
 router.get('/current-groups', async (req, res) => {
   try {
-    const groups = await Group.find({}).populate('verifiers provider');
+    const groups = await Group.find({}).populate('verifiers provider leader');
     res.status(200).json({ groups });
   } catch (error) {
     console.error('Error fetching current groups:', error); // Log the error

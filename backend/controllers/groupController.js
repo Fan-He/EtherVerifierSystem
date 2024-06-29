@@ -8,30 +8,6 @@ const NUM_GROUPS = 3; // Number of groups to allocate users into
 const NUM_VERIFIERS = 15; // Number of verifiers to select
 const NUM_PROVIDERS = 3; // Number of providers to select
 
-// Function to create a seeded random number generator
-function seededRandom(seed) {
-  const mask = 0xffffffff;
-  let m_w = seed;
-  let m_z = 888888;
-  return function() {
-    m_z = (36969 * (m_z & 65535) + (m_z >> 16)) & mask;
-    m_w = (18000 * (m_w & 65535) + (m_w >> 16)) & mask;
-    let result = ((m_z << 16) + (m_w & 65535)) >>> 0;
-    result /= 4294967296;
-    return result;
-  };
-}
-
-// Function to shuffle an array using a seeded random number generator
-const shuffleArray = (array, seed) => {
-  const random = seededRandom(seed);
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-};
-
 // Function to select users based on Rule A
 const selectUsersBasedOnRuleA = async (randomNumber, verifierCount, providerCount) => {
   console.log("-------select users based on Rule A--------------");
@@ -58,20 +34,40 @@ const selectUsersBasedOnRuleA = async (randomNumber, verifierCount, providerCoun
   return { verifiers, providers };
 };
 
-// Function to allocate users into groups using Rule B
-const allocateUsersIntoGroups = (verifiers, providers, groupCount, randomNumber) => {
-  console.log("-------allocate users into groups using Rule B--------------");
-  const shuffledVerifiers = shuffleArray(verifiers, parseInt(randomNumber));
-  const shuffledProviders = shuffleArray(providers, parseInt(randomNumber));
+// Function to sort users deterministically based on the random number
+const sortUsersDeterministically = (users, randomNumber) => {
+  return users.sort((a, b) => {
+    const hashA = crypto.createHash('sha256').update(a.walletAddress + randomNumber).digest('hex');
+    const hashB = crypto.createHash('sha256').update(b.walletAddress + randomNumber).digest('hex');
+    const bigIntA = BigInt(`0x${hashA}`);
+    const bigIntB = BigInt(`0x${hashB}`);
+    if (bigIntA < bigIntB) {
+      return -1;
+    } else if (bigIntA > bigIntB) {
+      return 1;
+    } else {
+      return 0;
+    }
+  });
+};
 
-  const groups = Array.from({ length: groupCount }, () => ({ verifiers: [], provider: null }));
+// Function to allocate users into groups deterministically
+const allocateUsersIntoGroupsDeterministically = (verifiers, providers, groupCount) => {
+  const groups = Array.from({ length: groupCount }, () => ({ verifiers: [], provider: null, leader: null }));
 
-  shuffledProviders.forEach((provider, index) => {
+  // Assign providers to groups in a round-robin fashion
+  providers.forEach((provider, index) => {
     groups[index % groupCount].provider = provider;
   });
 
-  shuffledVerifiers.forEach((verifier, index) => {
+  // Assign verifiers to groups in a round-robin fashion
+  verifiers.forEach((verifier, index) => {
     groups[index % groupCount].verifiers.push(verifier);
+  });
+
+  // Determine leader for each group
+  groups.forEach(group => {
+    group.leader = group.verifiers.reduce((max, verifier) => (max.walletAddress > verifier.walletAddress ? max : verifier), group.verifiers[0]);
   });
 
   return groups;
@@ -95,39 +91,47 @@ const groupUsers = async (req, res) => {
     let fulfilled = false;
     let randomNumber;
     while (!fulfilled) {
+      console.log('Checking fulfillment status...');
       await new Promise(resolve => setTimeout(resolve, 10000)); // Wait for 10 seconds before checking fulfillment status
       const events = await checkSpecificRequestFulfillment(requestId);
       if (events.length > 0) {
         fulfilled = true;
-        randomNumber = events[0].returnValues.randomWords[0];
+        randomNumber = events[0].returnValues.randomWords[0].toString();
+        console.log('Random number fulfilled:', randomNumber);
       }
     }
-
-    console.log("Random Number used for allocation:", randomNumber.toString());
 
     // Step 3: Apply Rule A to select users
     const { verifiers, providers } = await selectUsersBasedOnRuleA(randomNumber, NUM_VERIFIERS, NUM_PROVIDERS);
 
-    // Step 4: Apply Rule B to allocate selected users into groups
-    const groups = allocateUsersIntoGroups(verifiers, providers, NUM_GROUPS, randomNumber);
+    // Step 4: Apply deterministic Rule B to allocate selected users into groups
+    const sortedVerifiers = sortUsersDeterministically(verifiers, randomNumber);
+    const sortedProviders = sortUsersDeterministically(providers, randomNumber);
+
+    const groups = allocateUsersIntoGroupsDeterministically(sortedVerifiers, sortedProviders, NUM_GROUPS);
+
+    console.log('Allocated groups:', groups);
 
     // Step 5: Store the allocated groups into the database
     const groupPromises = groups.map(async (group, index) => {
       const newGroup = new Group({
         groupId: index + 1,
         verifiers: group.verifiers.map(user => user._id),
-        provider: group.provider._id, 
-        randomNumber: randomNumber.toString(),
+        provider: group.provider._id,
+        leader: group.leader._id,
+        randomNumber: randomNumber // Store the random number as a string
       });
       return newGroup.save();
     });
 
     await Promise.all(groupPromises);
+    console.log('Groups saved to database');
 
     // Step 6: Update the random request status to used
     await RandomRequest.findOneAndUpdate({ requestId }, { used: true });
+    console.log('Random request updated to used');
 
-    res.status(201).json({ message: 'Groups allocated successfully', groups, randomNumber: randomNumber.toString() });
+    res.status(201).json({ message: 'Groups allocated successfully', groups, randomNumber });
   } catch (error) {
     console.error('Error in groupUsers:', error);
     res.status(500).json({ error: error.message });
