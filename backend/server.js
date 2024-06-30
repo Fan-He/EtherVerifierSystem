@@ -3,9 +3,10 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const authRoutes = require('./routes/authRoutes');
 const messageRoutes = require('./routes/messageRoutes');
-const locationRoutes = require('./routes/locationRoutes'); 
+const locationRoutes = require('./routes/locationRoutes');
 const randomNumberRoutes = require('./routes/randomNumberRoutes');
 const groupRoutes = require('./routes/groupRoutes');
+const { initializeWebSocketServer } = require('./webSocket'); // Import the WebSocket module
 
 dotenv.config();
 
@@ -15,7 +16,7 @@ const app = express();
 app.set('trust proxy', true);
 
 app.use(express.json());
-Mongo_uri = 'mongodb://167.99.176.190:27017/usersystem';
+const Mongo_uri = 'mongodb://167.99.176.190:27017/usersystem';
 
 mongoose.connect(Mongo_uri, {
   useNewUrlParser: true,
@@ -31,7 +32,6 @@ app.use('/api/location', locationRoutes);
 app.use('/api/randomNumber', randomNumberRoutes);
 app.use('/api/groups', groupRoutes);
 
-
 app.use((req, res, next) => {
   const realIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
   console.log(`Request from IP: ${realIp}`);
@@ -39,8 +39,9 @@ app.use((req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5005;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-// const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-// server.timeout = 1000 * 60 * 10; // 10 minutes
+const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
-// require('/var/www/EtherVerifierSystem/backend/maintainers/ramdomNumberMaintainer.js');
+// Initialize WebSocket server
+initializeWebSocketServer(server);
+
+module.exports = app; // Export only the app

@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AssignGroup_old: typeof import('./src/components/AssignGroup_old.vue')['default']
+    Debug: typeof import('./src/components/Debug.vue')['default']
     GroupDisplay: typeof import('./src/components/GroupDisplay.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     IconCommunity: typeof import('./src/components/icons/IconCommunity.vue')['default']

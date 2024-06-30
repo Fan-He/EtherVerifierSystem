@@ -2,6 +2,7 @@ const User = require('../models/User');
 const Group = require('../models/Group');
 const RandomRequest = require('../models/RandomRequest');
 const { requestRandomNumber, checkSpecificRequestFulfillment } = require('../smart-contract/vrfIntegration');
+const { broadcastRandomNumber } = require('../webSocket'); // Import the WebSocket module
 const crypto = require('crypto');
 
 const NUM_GROUPS = 3; // Number of groups to allocate users into
@@ -10,7 +11,6 @@ const NUM_PROVIDERS = 3; // Number of providers to select
 
 // Function to select users based on Rule A
 const selectUsersBasedOnRuleA = async (randomNumber, verifierCount, providerCount) => {
-  console.log("-------select users based on Rule A--------------");
   const users = await User.find({});
 
   const usersWithHashModulo = users.map(user => {
@@ -52,22 +52,23 @@ const sortUsersDeterministically = (users, randomNumber) => {
 };
 
 // Function to allocate users into groups deterministically
-const allocateUsersIntoGroupsDeterministically = (verifiers, providers, groupCount) => {
+const allocateUsersIntoGroupsDeterministically = (verifiers, providers, groupCount, randomNumber) => {
   const groups = Array.from({ length: groupCount }, () => ({ verifiers: [], provider: null, leader: null }));
 
-  // Assign providers to groups in a round-robin fashion
   providers.forEach((provider, index) => {
     groups[index % groupCount].provider = provider;
   });
 
-  // Assign verifiers to groups in a round-robin fashion
   verifiers.forEach((verifier, index) => {
     groups[index % groupCount].verifiers.push(verifier);
   });
 
-  // Determine leader for each group
   groups.forEach(group => {
-    group.leader = group.verifiers.reduce((max, verifier) => (max.walletAddress > verifier.walletAddress ? max : verifier), group.verifiers[0]);
+    group.leader = group.verifiers.reduce((max, verifier) => {
+      const verifierHash = crypto.createHash('sha256').update(verifier.walletAddress + randomNumber).digest('hex');
+      const maxHash = crypto.createHash('sha256').update(max.walletAddress + randomNumber).digest('hex');
+      return BigInt(`0x${verifierHash}`) > BigInt(`0x${maxHash}`) ? verifier : max;
+    }, group.verifiers[0]);
   });
 
   return groups;
@@ -75,44 +76,52 @@ const allocateUsersIntoGroupsDeterministically = (verifiers, providers, groupCou
 
 // Main group allocation function
 const groupUsers = async (req, res) => {
-  console.log("-------allocate group users--------------");
   try {
-    // Step 0: Clear all existing groups in the database
+    // Clear all existing groups in the database
     await Group.deleteMany({});
 
-    // Step 1: Request a new Chainlink random number
-    const account = '0x9bB61dcD1A458fFa2d976c78f4a2Aae4f81Da0cc'; // Replace with the actual account to use
-    const { receipt, requestId } = await requestRandomNumber(account);
+    // // Request a new Chainlink random number
+    // const account = '0x9bB61dcD1A458fFa2d976c78f4a2Aae4f81Da0cc'; // Replace with the actual account to use
+    // const { receipt, requestId } = await requestRandomNumber(account);
 
-    console.log('Transaction receipt:', receipt);
-    console.log('Request ID:', requestId);
+    // console.log('Transaction receipt:', receipt);
+    // console.log('Request ID:', requestId);
 
-    // Step 2: Wait for the specific random request to be fulfilled
-    let fulfilled = false;
-    let randomNumber;
-    while (!fulfilled) {
-      console.log('Checking fulfillment status...');
-      await new Promise(resolve => setTimeout(resolve, 10000)); // Wait for 10 seconds before checking fulfillment status
-      const events = await checkSpecificRequestFulfillment(requestId);
-      if (events.length > 0) {
-        fulfilled = true;
-        randomNumber = events[0].returnValues.randomWords[0].toString();
-        console.log('Random number fulfilled:', randomNumber);
-      }
-    }
+    // // Wait for the specific random request to be fulfilled
+    // let fulfilled = false;
+    // let randomNumber;
+    // while (!fulfilled) {
+    //   console.log('Checking fulfillment status...');
+    //   await new Promise(resolve => setTimeout(resolve, 10000)); // Wait for 10 seconds before checking fulfillment status
+    //   const events = await checkSpecificRequestFulfillment(requestId);
+    //   if (events.length > 0) {
+    //     fulfilled = true;
+    //     randomNumber = events[0].returnValues.randomWords[0].toString();
+    //     console.log('Random number fulfilled:', randomNumber);
+    //   }
+    // }
 
-    // Step 3: Apply Rule A to select users
+
+    requestId = '93197867188801296568044086163331375079620424989368734861854331415142315796425';
+    randomNumber = '84281606300465785624993331571602207613114054382280637872386505550332737756732';
+
+
+    // Broadcast the random number to all connected clients
+    console.log('Broadcasting the random number to all clients');
+    broadcastRandomNumber(randomNumber);
+
+    // Apply Rule A to select users
     const { verifiers, providers } = await selectUsersBasedOnRuleA(randomNumber, NUM_VERIFIERS, NUM_PROVIDERS);
 
-    // Step 4: Apply deterministic Rule B to allocate selected users into groups
+    // Apply deterministic Rule B to allocate selected users into groups
     const sortedVerifiers = sortUsersDeterministically(verifiers, randomNumber);
     const sortedProviders = sortUsersDeterministically(providers, randomNumber);
 
-    const groups = allocateUsersIntoGroupsDeterministically(sortedVerifiers, sortedProviders, NUM_GROUPS);
+    const groups = allocateUsersIntoGroupsDeterministically(sortedVerifiers, sortedProviders, NUM_GROUPS, randomNumber);
 
     console.log('Allocated groups:', groups);
 
-    // Step 5: Store the allocated groups into the database
+    // Store the allocated groups into the database
     const groupPromises = groups.map(async (group, index) => {
       const newGroup = new Group({
         groupId: index + 1,
@@ -127,7 +136,7 @@ const groupUsers = async (req, res) => {
     await Promise.all(groupPromises);
     console.log('Groups saved to database');
 
-    // Step 6: Update the random request status to used
+    // Update the random request status to used
     await RandomRequest.findOneAndUpdate({ requestId }, { used: true });
     console.log('Random request updated to used');
 

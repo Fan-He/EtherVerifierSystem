@@ -8,6 +8,8 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
+    "crypto": "^1.0.1",
+    "crypto-js": "^4.2.0",
     "leaflet": "^1.9.4",
     "openpgp": "^5.11.1",
     "openssl": "^2.0.0",
