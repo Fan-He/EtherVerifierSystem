@@ -40,9 +40,13 @@
   
   export default {
     computed: {
-      ...mapState(['token', 'user', 'randomNumber', 'userGroup', 'isLeader', 'groupMembersOnlineStatus']),
+      ...mapState(['token', 'user', 'randomNumber', 'userGroup', 'isLeader', 'groupMembersOnlineStatus', 'userGroupMembers']),
       findUsernameById() {
         return (id) => {
+          if (!this.userGroupMembers || !Array.isArray(this.userGroupMembers)) {
+            console.error('userGroupMembers is not defined or not an array:', this.userGroupMembers);
+            return 'Unknown';
+          }
           const member = this.userGroupMembers.find(member => member._id === id);
           return member ? member.username : 'Unknown';
         };

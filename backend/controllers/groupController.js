@@ -1,9 +1,11 @@
 const User = require('../models/User');
 const Group = require('../models/Group');
+const Message = require('../models/Message');
 const RandomRequest = require('../models/RandomRequest');
 const { requestRandomNumber, checkSpecificRequestFulfillment } = require('../smart-contract/vrfIntegration');
 const { broadcastRandomNumber } = require('../webSocket'); // Import the WebSocket module
 const crypto = require('crypto');
+const { clearMessages } = require('../controllers/messageController');
 
 const NUM_GROUPS = 3; // Number of groups to allocate users into
 const NUM_VERIFIERS = 15; // Number of verifiers to select
@@ -79,31 +81,34 @@ const groupUsers = async (req, res) => {
   try {
     // Clear all existing groups in the database
     await Group.deleteMany({});
+    // await clearMessages(req, res);
 
-    // // Request a new Chainlink random number
-    // const account = '0x9bB61dcD1A458fFa2d976c78f4a2Aae4f81Da0cc'; // Replace with the actual account to use
-    // const { receipt, requestId } = await requestRandomNumber(account);
+    await Message.deleteMany({});
 
-    // console.log('Transaction receipt:', receipt);
-    // console.log('Request ID:', requestId);
+    // Request a new Chainlink random number
+    const account = '0x9bB61dcD1A458fFa2d976c78f4a2Aae4f81Da0cc'; // Replace with the actual account to use
+    const { receipt, requestId } = await requestRandomNumber(account);
 
-    // // Wait for the specific random request to be fulfilled
-    // let fulfilled = false;
-    // let randomNumber;
-    // while (!fulfilled) {
-    //   console.log('Checking fulfillment status...');
-    //   await new Promise(resolve => setTimeout(resolve, 10000)); // Wait for 10 seconds before checking fulfillment status
-    //   const events = await checkSpecificRequestFulfillment(requestId);
-    //   if (events.length > 0) {
-    //     fulfilled = true;
-    //     randomNumber = events[0].returnValues.randomWords[0].toString();
-    //     console.log('Random number fulfilled:', randomNumber);
-    //   }
-    // }
+    console.log('Transaction receipt:', receipt);
+    console.log('Request ID:', requestId);
+
+    // Wait for the specific random request to be fulfilled
+    let fulfilled = false;
+    let randomNumber;
+    while (!fulfilled) {
+      console.log('Checking fulfillment status...');
+      await new Promise(resolve => setTimeout(resolve, 10000)); // Wait for 10 seconds before checking fulfillment status
+      const events = await checkSpecificRequestFulfillment(requestId);
+      if (events.length > 0) {
+        fulfilled = true;
+        randomNumber = events[0].returnValues.randomWords[0].toString();
+        console.log('Random number fulfilled:', randomNumber);
+      }
+    }
 
 
-    requestId = '93197867188801296568044086163331375079620424989368734861854331415142315796425';
-    randomNumber = '84281606300465785624993331571602207613114054382280637872386505550332737756732';
+    // requestId = '93197867188801296568044086163331375079620424989368734861854331415142315796425';
+    // randomNumber = '84281606300465785624993331571602207613114054382280637872386505550332737756732';
 
 
     // Broadcast the random number to all connected clients

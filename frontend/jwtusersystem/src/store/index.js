@@ -62,6 +62,7 @@ const store = createStore({
       console.log('Action: handleNewRandomNumber', randomNumber);
       commit('setRandomNumber', randomNumber);
       dispatch('performGroupAllocation', randomNumber);
+      dispatch('waitAndCheckInbox');
     },
     async performGroupAllocation({ commit, dispatch, state }, randomNumber) {
       console.log('Action: performGroupAllocation', randomNumber);
@@ -93,6 +94,30 @@ const store = createStore({
       const { randomNumber, userGroupMembers } = state;
       for (const member of userGroupMembers) {
         await sendMessageToMember(member.email, randomNumber); // Pass email instead of ID
+      }
+    },
+    async waitAndCheckInbox({ dispatch }) {
+      console.log('Action: waitAndCheckInbox');
+      await new Promise(resolve => setTimeout(resolve, 5000)); // Wait for 5 seconds
+      dispatch('checkInboxForOnlineStatus');
+    },
+    async checkInboxForOnlineStatus({ commit, state }) {
+      console.log('Action: checkInboxForOnlineStatus');
+      try {
+        const response = await axios.get('/api/messages/inbox', {
+          headers: { Authorization: `Bearer ${state.token}` }
+        });
+        const messages = response.data;
+        const onlineStatus = {};
+
+        for (const member of state.userGroupMembers) {
+          onlineStatus[member._id] = messages.some(message => message.from._id === member._id);
+        }
+
+        console.log('Updated Online Status:', onlineStatus);
+        commit('setGroupMembersOnlineStatus', onlineStatus);
+      } catch (error) {
+        console.error('Failed to check inbox for online status:', error);
       }
     },
     receiveRandomNumberFromMember({ commit, state }, { memberId, randomNumber }) {
