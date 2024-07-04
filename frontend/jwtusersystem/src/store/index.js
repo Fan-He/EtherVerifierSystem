@@ -91,9 +91,11 @@ const store = createStore({
     },
     async shareRandomNumberWithGroup({ state }) {
       console.log('Action: shareRandomNumberWithGroup');
-      const { randomNumber, userGroupMembers } = state;
+      const { randomNumber, user, userGroupMembers } = state;
+      const ipAddress = await getUserIpAddress();
       for (const member of userGroupMembers) {
-        await sendMessageToMember(member.email, randomNumber); // Pass email instead of ID
+        const personalHash = generatePersonalHash(randomNumber, user.walletAddress, ipAddress);
+        await sendMessageToMember(member.email, personalHash); // Pass email and personalHash to the sendMessageToMember function
       }
     },
     async waitAndCheckInbox({ dispatch }) {
@@ -242,6 +244,22 @@ function reselectLeaderIfNeeded(state) {
   } else {
     return state.isLeader;
   }
+}
+
+
+function generatePersonalHash(randomNumber, walletAddress, ipAddress) {
+  const timestamp = new Date().toISOString();
+  const dataToHash = `${randomNumber}-${walletAddress}-${timestamp}-${ipAddress}`;
+  const hash = CryptoJS.SHA256(dataToHash).toString(CryptoJS.enc.Hex);
+  return hash;
+}
+
+
+async function getUserIpAddress() {
+  
+  const response = await axios.get('https://api.ipify.org?format=json');
+  console.log("User IP Address: ", response.data.ip);
+  return response.data.ip;
 }
 
 export default store;
