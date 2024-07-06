@@ -118,6 +118,18 @@ const store = createStore({
 
         console.log('Updated Online Status:', onlineStatus);
         commit('setGroupMembersOnlineStatus', onlineStatus);
+
+        // Check and update leader after updating online status
+        const newLeader = reselectLeaderIfNeeded(state);
+        if (newLeader) {
+          commit('setIsLeader', newLeader._id === state.user._id);
+          // Update the group leader in the state
+          commit('setUserGroup', { ...state.userGroup, leader: newLeader });
+          if (newLeader._id === state.user._id) {
+            console.log("call leader action from checkInboxForOnlineStatus");
+            leaderActions(state); // Call leaderActions if the current user is the leader
+          }
+        }
       } catch (error) {
         console.error('Failed to check inbox for online status:', error);
       }
@@ -127,11 +139,17 @@ const store = createStore({
       const status = { ...state.groupMembersOnlineStatus, [memberId]: true };
       console.log('Updated Status:', status);
       commit('setGroupMembersOnlineStatus', status);
-      
-      // Check if all members have sent their random number
-      const allMembersReceived = Object.keys(status).length === state.userGroupMembers.length;
-      if (allMembersReceived) {
-        commit('setIsLeader', reselectLeaderIfNeeded(state)); // Implement reselectLeaderIfNeeded to handle offline leader case
+
+      // Check and update leader after updating online status
+      const newLeader = reselectLeaderIfNeeded(state);
+      if (newLeader) {
+        commit('setIsLeader', newLeader._id === state.user._id);
+        // Update the group leader in the state
+        commit('setUserGroup', { ...state.userGroup, leader: newLeader });
+        if (newLeader._id === state.user._id) {
+          console.log("call leader action from receiveRandomNumberFromMember");
+          leaderActions(state); // Call leaderActions if the current user is the leader
+        }
       }
     }
   },
@@ -236,15 +254,17 @@ function reselectLeaderIfNeeded(state) {
   const onlineVerifiers = group.verifiers.filter(verifier => state.groupMembersOnlineStatus[verifier._id]);
 
   if (onlineVerifiers.length > 0) {
-    return onlineVerifiers.reduce((max, verifier) => {
+    const newLeader = onlineVerifiers.reduce((max, verifier) => {
       const verifierHash = CryptoJS.SHA256(verifier.walletAddress + state.randomNumber).toString(CryptoJS.enc.Hex);
       const maxHash = CryptoJS.SHA256(max.walletAddress + state.randomNumber).toString(CryptoJS.enc.Hex);
       return BigInt(`0x${verifierHash}`) > BigInt(`0x${maxHash}`) ? verifier : max;
     }, onlineVerifiers[0]);
-  } else {
-    return state.isLeader;
+
+    return newLeader;
   }
+  return null;
 }
+
 
 
 function generatePersonalHash(randomNumber, walletAddress, ipAddress) {
@@ -253,6 +273,13 @@ function generatePersonalHash(randomNumber, walletAddress, ipAddress) {
   const hash = CryptoJS.SHA256(dataToHash).toString(CryptoJS.enc.Hex);
   return hash;
 }
+
+function leaderActions(state) {
+  console.log('Function: leaderActions', state);
+  // Placeholder for leader-specific actions
+  // Implement the details of this function later
+}
+
 
 
 async function getUserIpAddress() {
