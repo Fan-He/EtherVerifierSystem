@@ -438,6 +438,41 @@
       "artifacts": [
         "IVRFSubscriptionV2Plus"
       ]
+    },
+    "/var/www/EtherVerifierSystem/smart-contracts/contracts/GroupHashStorage.sol": {
+      "lastModificationDate": 1720249254018,
+      "contentHash": "5bb55313336d4bdba3dbcbdd6c83e7b6",
+      "sourceName": "contracts/GroupHashStorage.sol",
+      "solcConfig": {
+        "version": "0.8.7",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.7"
+      ],
+      "artifacts": [
+        "GroupHashStorage"
+      ]
     }
   }
 }

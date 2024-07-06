@@ -1,7 +1,8 @@
 // backend/routes/groupRoutes.js
 const express = require('express');
 const router = express.Router();
-const { groupUsers } = require('../controllers/groupController');
+const { groupUsers, generateGroupHash, updateLeader  } = require('../controllers/groupController');
+const authMiddleware = require('../middleware/authMiddleware');
 const Group = require('../models/Group');
 
 // Route to allocate groups
@@ -17,5 +18,8 @@ router.get('/current-groups', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+router.post('/generate-group-hash', authMiddleware, generateGroupHash);
+router.put('/update-leader', authMiddleware, updateLeader);
 
 module.exports = router;

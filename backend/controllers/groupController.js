@@ -6,6 +6,8 @@ const { requestRandomNumber, checkSpecificRequestFulfillment } = require('../sma
 const { broadcastRandomNumber } = require('../webSocket'); // Import the WebSocket module
 const crypto = require('crypto');
 const { clearMessages } = require('../controllers/messageController');
+const { storeGroupHash } = require('../smart-contract/groupHashStorageIntegration');
+const CryptoJS = require('crypto-js');
 
 const NUM_GROUPS = 3; // Number of groups to allocate users into
 const NUM_VERIFIERS = 15; // Number of verifiers to select
@@ -152,4 +154,124 @@ const groupUsers = async (req, res) => {
   }
 };
 
-module.exports = { groupUsers };
+const generateNewRandomNumber = (personalHashes) => {
+  const combinedHashes = personalHashes.join('');
+  return CryptoJS.SHA256(combinedHashes).toString(CryptoJS.enc.Hex);
+};
+
+const getNumberWithinRange = (hash, lowerLimit, upperLimit) => {
+  const hashInt = BigInt(`0x${hash}`);
+  const range = BigInt(upperLimit) - BigInt(lowerLimit) + BigInt(1);
+  const numberWithinRange = hashInt % range + BigInt(lowerLimit);
+  return numberWithinRange;
+};
+
+const generateGroupHash = (newRandomNumber) => {
+  let currentHash = CryptoJS.SHA256(newRandomNumber).toString(CryptoJS.enc.Hex);
+  const groupHash = Array(64).fill('0').join('');
+
+  const ranges = [
+    { lower: '0x00000000', upper: '0x3FFFFFFF' },
+    { lower: '0x40000000', upper: '0x7FFFFFFF' },
+    { lower: '0x80000000', upper: '0xFFFFFFFF' },
+    { lower: '0x100000000', upper: '0x1FFFFFFFF' },
+    { lower: '0x200000000', upper: '0x3FFFFFFFF' },
+    { lower: '0x400000000', upper: '0x7FFFFFFFF' },
+    { lower: '0x800000000', upper: '0xFFFFFFFFF' },
+    { lower: '0x1000000000', upper: '0x1FFFFFFFFF' },
+    { lower: '0x2000000000', upper: '0x3FFFFFFFFF' },
+    { lower: '0x4000000000', upper: '0x7FFFFFFFFF' },
+    { lower: '0x8000000000', upper: '0xFFFFFFFFFF' },
+    { lower: '0x10000000000', upper: '0x1FFFFFFFFFF' },
+    { lower: '0x20000000000', upper: '0x3FFFFFFFFFF' },
+    { lower: '0x40000000000', upper: '0x7FFFFFFFFFF' },
+    { lower: '0x80000000000', upper: '0xFFFFFFFFFFF' },
+    { lower: '0x100000000000', upper: '0x1FFFFFFFFFFF' },
+    { lower: '0x200000000000', upper: '0x3FFFFFFFFFFF' },
+    { lower: '0x400000000000', upper: '0x7FFFFFFFFFFF' },
+    { lower: '0x800000000000', upper: '0xFFFFFFFFFFFF' },
+    { lower: '0x1000000000000', upper: '0x1FFFFFFFFFFFF' },
+    { lower: '0x2000000000000', upper: '0x3FFFFFFFFFFFF' },
+    { lower: '0x4000000000000', upper: '0x7FFFFFFFFFFFF' },
+    { lower: '0x8000000000000', upper: '0xFFFFFFFFFFFFF' },
+    { lower: '0x10000000000000', upper: '0x1FFFFFFFFFFFFF' },
+    { lower: '0x20000000000000', upper: '0x3FFFFFFFFFFFFF' },
+    { lower: '0x40000000000000', upper: '0x7FFFFFFFFFFFFF' },
+    { lower: '0x80000000000000', upper: '0xFFFFFFFFFFFFFF' },
+    { lower: '0x100000000000000', upper: '0x1FFFFFFFFFFFFFF' },
+    { lower: '0x200000000000000', upper: '0x3FFFFFFFFFFFFFF' },
+    { lower: '0x400000000000000', upper: '0x7FFFFFFFFFFFFFF' },
+    { lower: '0x800000000000000', upper: '0xFFFFFFFFFFFFFFF' },
+    { lower: '0x1000000000000000', upper: '0x1FFFFFFFFFFFFFFF' },
+    { lower: '0x2000000000000000', upper: '0x3FFFFFFFFFFFFFFF' },
+    { lower: '0x4000000000000000', upper: '0x7FFFFFFFFFFFFFFF' },
+    { lower: '0x8000000000000000', upper: '0xFFFFFFFFFFFFFFFF' }
+  ];
+
+  for (let i = 30; i <= 64; i++) {
+    const { lower, upper } = ranges[i - 30];
+    const bitValue = getNumberWithinRange(currentHash, lower, upper);
+    groupHash[i - 30] = bitValue;
+    currentHash = CryptoJS.SHA256(currentHash).toString(CryptoJS.enc.Hex);
+  }
+
+  return groupHash.join('');
+};
+
+const generateGroupHashController = async (req, res) => {
+  try {
+    const group = await Group.findOne({ leader: req.user._id });
+    if (!group) {
+      return res.status(403).json({ message: 'Access denied, only leaders can generate group hash' });
+    }
+
+    const personalHashes = await Message.find({
+      from: { $in: group.verifiers.concat(group.provider) },
+      personalHash: { $exists: true }
+    }).sort({ timestamp: -1 }).distinct('personalHash');
+
+    if (personalHashes.length === 0) {
+      return res.status(400).json({ error: 'No personal hashes found' });
+    }
+
+    const newRandomNumber = generateNewRandomNumber(personalHashes);
+    const groupHash = generateGroupHash(newRandomNumber);
+    console.log("groupHash", groupHash);
+
+    await storeGroupHash(groupHash);
+
+    res.status(200).json({ groupHash });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const updateLeader = async (req, res) => {
+  try {
+    const { newLeaderId } = req.body;
+
+    // Find the group containing the new leader as one of the members
+    const group = await Group.findOne({
+      $or: [
+        { 'verifiers': newLeaderId },
+        { 'provider': newLeaderId }
+      ]
+    });
+
+    if (!group) {
+      return res.status(404).json({ message: 'Group not found' });
+    }
+
+    group.leader = newLeaderId;
+    await group.save();
+
+    res.status(200).json({ message: 'Leader updated successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+module.exports = { generateGroupHash: generateGroupHashController, updateLeader };
+
+
+module.exports = { groupUsers, generateGroupHash: generateGroupHashController, updateLeader };

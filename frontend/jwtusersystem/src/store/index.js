@@ -120,14 +120,15 @@ const store = createStore({
         commit('setGroupMembersOnlineStatus', onlineStatus);
 
         // Check and update leader after updating online status
-        const newLeader = reselectLeaderIfNeeded(state);
+        const newLeader = reselectLeaderIfNeeded({ commit, state });
         if (newLeader) {
           commit('setIsLeader', newLeader._id === state.user._id);
           // Update the group leader in the state
           commit('setUserGroup', { ...state.userGroup, leader: newLeader });
           if (newLeader._id === state.user._id) {
-            leaderActions(state); // Call leaderActions if the current user is the leader
+            leaderActions({ commit, state }); // Call leaderActions if the current user is the leader
           }
+          
         }
       } catch (error) {
         console.error('Failed to check inbox for online status:', error);
@@ -229,27 +230,62 @@ async function sendMessageToMember(memberEmail, randomNumber) {
   }
 }
 
-function reselectLeaderIfNeeded(state) {
+function reselectLeaderIfNeeded({ commit, state }) {
   console.log('Function: reselectLeaderIfNeeded', state);
   const group = state.userGroup;
+  console.log("group id is: ", group);
   const onlineVerifiers = group.verifiers.filter(verifier => state.groupMembersOnlineStatus[verifier._id]);
 
   if (onlineVerifiers.length > 0) {
-    return onlineVerifiers.reduce((max, verifier) => {
+    const newLeader =  onlineVerifiers.reduce((max, verifier) => {
       const verifierHash = CryptoJS.SHA256(verifier.walletAddress + state.randomNumber).toString(CryptoJS.enc.Hex);
       const maxHash = CryptoJS.SHA256(max.walletAddress + state.randomNumber).toString(CryptoJS.enc.Hex);
       return BigInt(`0x${verifierHash}`) > BigInt(`0x${maxHash}`) ? verifier : max;
     }, onlineVerifiers[0]);
+
+    if (newLeader._id !== group.leader._id) {
+      console.log('Updating Leader in DB for New Leader ID:', newLeader._id);
+      updateLeaderInDB(newLeader._id, state.token)
+        .then(() => {
+          commit('setIsLeader', newLeader._id === state.user._id);
+          commit('setUserGroup', { ...group, leader: newLeader });
+        })
+        .catch(error => {
+          console.error('Failed to update leader in state:', error);
+        });
+    }
+    return newLeader;
   } else {
     return null;
   }
 }
 
-function leaderActions(state) {
-  console.log('Function: leaderActions', state);
-  // Placeholder for leader-specific actions
-  // Implement the details of this function later
+async function updateLeaderInDB(newLeaderId, token) {
+  try {
+    console.log("UPDATE LEADER IN DB");
+    await axios.put(`/api/groups/update-leader`, { newLeaderId }, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  } catch (error) {
+    console.error('Failed to update leader in database:', error);
+    throw error;
+  }
 }
+
+
+
+async function leaderActions({ commit, state }) {
+  console.log('Function: leaderActions', state);
+  try {
+    const response = await axios.post('/api/groups/generate-group-hash', null, {
+      headers: { Authorization: `Bearer ${state.token}` }
+    });
+    commit('setGroupHash', response.data.groupHash);
+  } catch (error) {
+    console.error('Failed to generate group hash:', error);
+  }
+}
+
 
 function generatePersonalHash(randomNumber, walletAddress, ipAddress) {
   const timestamp = new Date().toISOString();
