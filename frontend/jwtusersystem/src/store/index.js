@@ -126,30 +126,11 @@ const store = createStore({
           // Update the group leader in the state
           commit('setUserGroup', { ...state.userGroup, leader: newLeader });
           if (newLeader._id === state.user._id) {
-            console.log("call leader action from checkInboxForOnlineStatus");
             leaderActions(state); // Call leaderActions if the current user is the leader
           }
         }
       } catch (error) {
         console.error('Failed to check inbox for online status:', error);
-      }
-    },
-    receiveRandomNumberFromMember({ commit, state }, { memberId, randomNumber }) {
-      console.log('Action: receiveRandomNumberFromMember', memberId, randomNumber);
-      const status = { ...state.groupMembersOnlineStatus, [memberId]: true };
-      console.log('Updated Status:', status);
-      commit('setGroupMembersOnlineStatus', status);
-
-      // Check and update leader after updating online status
-      const newLeader = reselectLeaderIfNeeded(state);
-      if (newLeader) {
-        commit('setIsLeader', newLeader._id === state.user._id);
-        // Update the group leader in the state
-        commit('setUserGroup', { ...state.userGroup, leader: newLeader });
-        if (newLeader._id === state.user._id) {
-          console.log("call leader action from receiveRandomNumberFromMember");
-          leaderActions(state); // Call leaderActions if the current user is the leader
-        }
       }
     }
   },
@@ -254,24 +235,14 @@ function reselectLeaderIfNeeded(state) {
   const onlineVerifiers = group.verifiers.filter(verifier => state.groupMembersOnlineStatus[verifier._id]);
 
   if (onlineVerifiers.length > 0) {
-    const newLeader = onlineVerifiers.reduce((max, verifier) => {
+    return onlineVerifiers.reduce((max, verifier) => {
       const verifierHash = CryptoJS.SHA256(verifier.walletAddress + state.randomNumber).toString(CryptoJS.enc.Hex);
       const maxHash = CryptoJS.SHA256(max.walletAddress + state.randomNumber).toString(CryptoJS.enc.Hex);
       return BigInt(`0x${verifierHash}`) > BigInt(`0x${maxHash}`) ? verifier : max;
     }, onlineVerifiers[0]);
-
-    return newLeader;
+  } else {
+    return null;
   }
-  return null;
-}
-
-
-
-function generatePersonalHash(randomNumber, walletAddress, ipAddress) {
-  const timestamp = new Date().toISOString();
-  const dataToHash = `${randomNumber}-${walletAddress}-${timestamp}-${ipAddress}`;
-  const hash = CryptoJS.SHA256(dataToHash).toString(CryptoJS.enc.Hex);
-  return hash;
 }
 
 function leaderActions(state) {
@@ -280,10 +251,14 @@ function leaderActions(state) {
   // Implement the details of this function later
 }
 
-
+function generatePersonalHash(randomNumber, walletAddress, ipAddress) {
+  const timestamp = new Date().toISOString();
+  const dataToHash = `${randomNumber}-${walletAddress}-${timestamp}-${ipAddress}`;
+  const hash = CryptoJS.SHA256(dataToHash).toString(CryptoJS.enc.Hex);
+  return hash;
+}
 
 async function getUserIpAddress() {
-  
   const response = await axios.get('https://api.ipify.org?format=json');
   console.log("User IP Address: ", response.data.ip);
   return response.data.ip;
