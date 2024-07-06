@@ -8,6 +8,7 @@ const crypto = require('crypto');
 const { clearMessages } = require('../controllers/messageController');
 const { storeGroupHash } = require('../smart-contract/groupHashStorageIntegration');
 const CryptoJS = require('crypto-js');
+const openpgp = require('openpgp');
 
 const NUM_GROUPS = 3; // Number of groups to allocate users into
 const NUM_VERIFIERS = 15; // Number of verifiers to select
@@ -161,14 +162,17 @@ const generateNewRandomNumber = (personalHashes) => {
 
 const getNumberWithinRange = (hash, lowerLimit, upperLimit) => {
   const hashInt = BigInt(`0x${hash}`);
-  const range = BigInt(upperLimit) - BigInt(lowerLimit) + BigInt(1);
-  const numberWithinRange = hashInt % range + BigInt(lowerLimit);
+  const lower = BigInt(lowerLimit);
+  const upper = BigInt(upperLimit);
+  const range = upper - lower + BigInt(1);
+  const numberWithinRange = hashInt % range + lower;
   return numberWithinRange;
 };
 
+
 const generateGroupHash = (newRandomNumber) => {
   let currentHash = CryptoJS.SHA256(newRandomNumber).toString(CryptoJS.enc.Hex);
-  const groupHash = Array(64).fill('0').join('');
+  let groupHash = BigInt(0);
 
   const ranges = [
     { lower: '0x00000000', upper: '0x3FFFFFFF' },
@@ -211,24 +215,78 @@ const generateGroupHash = (newRandomNumber) => {
   for (let i = 30; i <= 64; i++) {
     const { lower, upper } = ranges[i - 30];
     const bitValue = getNumberWithinRange(currentHash, lower, upper);
-    groupHash[i - 30] = bitValue;
+    console.log(`Bit ${i}: ${bitValue}`); 
+    groupHash = (groupHash << BigInt(4)) | bitValue;
     currentHash = CryptoJS.SHA256(currentHash).toString(CryptoJS.enc.Hex);
   }
 
-  return groupHash.join('');
+  // Convert groupHash to hex string and pad with leading zeros to make it 64 bits
+  const groupHashHex = groupHash.toString(16).padStart(16, '0');
+  return `0000000000000000000000000000${groupHashHex}`;
 };
+
+
+
+const getPersonalHashes = async (user, password, memberIds) => {
+  try {
+    // Retrieve all messages from group members to the user
+    const messages = await Message.find({
+      from: { $in: memberIds },
+      to: user._id,
+      content: { $exists: true }
+    }).sort({ timestamp: -1 }).exec();
+
+    console.log('Retrieved Messages:', messages); // Log the retrieved messages
+
+    // Decrypt messages to get personal hashes
+    const personalHashes = await Promise.all(messages.map(async message => {
+      try {
+        const privateKeyArmored = user.privateKey;
+        console.log("privateKeyArmored: ", privateKeyArmored);
+        const privateKey = await openpgp.decryptKey({
+          privateKey: await openpgp.readPrivateKey({ armoredKey: privateKeyArmored }),
+          passphrase: password
+        });
+
+        const decrypted = await openpgp.decrypt({
+          message: await openpgp.readMessage({ armoredMessage: message.content }),
+          decryptionKeys: privateKey
+        });
+
+        return decrypted.data;
+      } catch (error) {
+        console.error('Error decrypting message:', error);
+        return null;
+      }
+    }));
+
+    const uniqueHashes = [...new Set(personalHashes.filter(hash => hash !== null))];
+    console.log('Decrypted Personal Hashes:', uniqueHashes); // Log the decrypted personal hashes
+
+    return uniqueHashes;
+  } catch (error) {
+    console.error('Error in getPersonalHashes:', error);
+    throw error;
+  }
+};
+
+
 
 const generateGroupHashController = async (req, res) => {
   try {
-    const group = await Group.findOne({ leader: req.user._id });
+    console.log("USER IS: ", req.user);
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const group = await Group.findOne({ leader: req.user.id });
     if (!group) {
       return res.status(403).json({ message: 'Access denied, only leaders can generate group hash' });
     }
 
-    const personalHashes = await Message.find({
-      from: { $in: group.verifiers.concat(group.provider) },
-      personalHash: { $exists: true }
-    }).sort({ timestamp: -1 }).distinct('personalHash');
+    const memberIds = group.verifiers.concat(group.provider).map(member => member._id);
+    const personalHashes = await getPersonalHashes(user, req.user.tempPassword, memberIds);
 
     if (personalHashes.length === 0) {
       return res.status(400).json({ error: 'No personal hashes found' });
@@ -236,15 +294,17 @@ const generateGroupHashController = async (req, res) => {
 
     const newRandomNumber = generateNewRandomNumber(personalHashes);
     const groupHash = generateGroupHash(newRandomNumber);
-    console.log("groupHash", groupHash);
+    console.log("groupHash: ", groupHash);
 
     await storeGroupHash(groupHash);
 
     res.status(200).json({ groupHash });
   } catch (error) {
+    console.error('Error in generateGroupHashController:', error);
     res.status(500).json({ error: error.message });
   }
 };
+
 
 const updateLeader = async (req, res) => {
   try {
@@ -271,7 +331,5 @@ const updateLeader = async (req, res) => {
   }
 };
 
-module.exports = { generateGroupHash: generateGroupHashController, updateLeader };
 
-
-module.exports = { groupUsers, generateGroupHash: generateGroupHashController, updateLeader };
+module.exports = { groupUsers, generateGroupHash: generateGroupHashController, updateLeader, getPersonalHashes };

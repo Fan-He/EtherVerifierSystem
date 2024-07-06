@@ -120,7 +120,7 @@ const store = createStore({
         commit('setGroupMembersOnlineStatus', onlineStatus);
 
         // Check and update leader after updating online status
-        const newLeader = reselectLeaderIfNeeded({ commit, state });
+        const newLeader = await reselectLeaderIfNeeded({ commit, state });
         if (newLeader) {
           commit('setIsLeader', newLeader._id === state.user._id);
           // Update the group leader in the state
@@ -230,7 +230,7 @@ async function sendMessageToMember(memberEmail, randomNumber) {
   }
 }
 
-function reselectLeaderIfNeeded({ commit, state }) {
+async function reselectLeaderIfNeeded({ commit, state }) {
   console.log('Function: reselectLeaderIfNeeded', state);
   const group = state.userGroup;
   console.log("group id is: ", group);
@@ -245,14 +245,14 @@ function reselectLeaderIfNeeded({ commit, state }) {
 
     if (newLeader._id !== group.leader._id) {
       console.log('Updating Leader in DB for New Leader ID:', newLeader._id);
-      updateLeaderInDB(newLeader._id, state.token)
-        .then(() => {
-          commit('setIsLeader', newLeader._id === state.user._id);
-          commit('setUserGroup', { ...group, leader: newLeader });
-        })
-        .catch(error => {
-          console.error('Failed to update leader in state:', error);
-        });
+      await updateLeaderInDB(newLeader._id, state.token);
+        // .then(() => {
+        //   commit('setIsLeader', newLeader._id === state.user._id);
+        //   commit('setUserGroup', { ...group, leader: newLeader });
+        // })
+        // .catch(error => {
+        //   console.error('Failed to update leader in state:', error);
+        // });
     }
     return newLeader;
   } else {
@@ -266,6 +266,7 @@ async function updateLeaderInDB(newLeaderId, token) {
     await axios.put(`/api/groups/update-leader`, { newLeaderId }, {
       headers: { Authorization: `Bearer ${token}` }
     });
+    console.log('Leader updated in database-----------------');
   } catch (error) {
     console.error('Failed to update leader in database:', error);
     throw error;
