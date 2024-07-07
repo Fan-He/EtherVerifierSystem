@@ -22,12 +22,19 @@ contract Challenges {
 
     Challenge[] public challenges;
 
+    event GroupHashStored(bytes32[] groupHash);
+
     event ChallengeCreated(uint indexed challengeId, address indexed recipient, string challengeText);
     event SubChallengeSolved(uint indexed challengeId, uint indexed subChallengeIndex, bytes32 subSolution);
     event ChallengeVerified(uint indexed challengeId, uint res);
     event log(string challengeId);
     event log2(bytes solved);
     event log3(bytes32 solved);
+
+    function storeGroupHash( address _recipient, string memory _challengeText, bytes32[] memory groupHash) public {
+        emit GroupHashStored(groupHash);
+        createChallenge(_recipient, _challengeText, groupHash);
+    }
 
     function createChallenge(address _recipient, string memory _challengeText, bytes32[] memory _subChallenges) public {
         require(_subChallenges.length == BIT_RANGE, "There must be exactly 35 sub-challenges.");

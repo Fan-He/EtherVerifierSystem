@@ -11,7 +11,8 @@ const store = createStore({
     userGroup: null,
     userGroupMembers: [],
     isLeader: false,
-    groupMembersOnlineStatus: {}
+    groupMembersOnlineStatus: {},
+    transactionData: null, // New state property for transaction data
   },
   mutations: {
     setToken(state, token) {
@@ -41,7 +42,11 @@ const store = createStore({
     setGroupMembersOnlineStatus(state, status) {
       console.log('Mutation: setGroupMembersOnlineStatus', status);
       state.groupMembersOnlineStatus = status;
-    }
+    },
+    setTransactionData(state, transactionData) {
+      console.log('Mutation: setTransactionData', transactionData);
+      state.transactionData = transactionData;
+    },
   },
   actions: {
     async fetchUser({ commit, state }) {
@@ -67,21 +72,19 @@ const store = createStore({
     async performGroupAllocation({ commit, dispatch, state }, randomNumber) {
       console.log('Action: performGroupAllocation', randomNumber);
       try {
-        // Fetch users from the backend (assume an API endpoint exists)
         const usersResponse = await axios.get('/api/auth/users', {
           headers: { Authorization: `Bearer ${state.token}` }
         });
         const users = usersResponse.data;
 
-        const groups = performLocalGroupAllocation(users, randomNumber); // Implement this function to mirror group allocation logic from backend
-        const userGroup = findUserGroup(groups, state.user); // Implement this function to find the group of the current user
+        const groups = performLocalGroupAllocation(users, randomNumber);
+        const userGroup = findUserGroup(groups, state.user);
         console.log('Groups:', groups);
         console.log('User Group:', userGroup);
         commit('setUserGroup', userGroup);
         commit('setUserGroupMembers', userGroup ? userGroup.verifiers.concat(userGroup.provider) : []);
-        commit('setIsLeader', userGroup ? checkIfUserIsLeader(userGroup, state.user) : false); // Implement this function to check if the current user is the leader
+        commit('setIsLeader', userGroup ? checkIfUserIsLeader(userGroup, state.user) : false);
 
-        // Share random number with group members if userGroup is found
         if (userGroup) {
           dispatch('shareRandomNumberWithGroup', state.randomNumber);
         }
@@ -95,12 +98,12 @@ const store = createStore({
       const ipAddress = await getUserIpAddress();
       for (const member of userGroupMembers) {
         const personalHash = generatePersonalHash(randomNumber, user.walletAddress, ipAddress);
-        await sendMessageToMember(member.email, personalHash); // Pass email and personalHash to the sendMessageToMember function
+        await sendMessageToMember(member.email, personalHash);
       }
     },
     async waitAndCheckInbox({ dispatch }) {
       console.log('Action: waitAndCheckInbox');
-      await new Promise(resolve => setTimeout(resolve, 5000)); // Wait for 5 seconds
+      await new Promise(resolve => setTimeout(resolve, 5000));
       dispatch('checkInboxForOnlineStatus');
     },
     async checkInboxForOnlineStatus({ commit, state }) {
@@ -119,23 +122,45 @@ const store = createStore({
         console.log('Updated Online Status:', onlineStatus);
         commit('setGroupMembersOnlineStatus', onlineStatus);
 
-        // Check and update leader after updating online status
         const newLeader = await reselectLeaderIfNeeded({ commit, state });
         if (newLeader) {
           commit('setIsLeader', newLeader._id === state.user._id);
-          // Update the group leader in the state
           commit('setUserGroup', { ...state.userGroup, leader: newLeader });
           if (newLeader._id === state.user._id) {
-            leaderActions({ commit, state }); // Call leaderActions if the current user is the leader
+            leaderActions({ commit, state });
           }
-          
         }
       } catch (error) {
         console.error('Failed to check inbox for online status:', error);
       }
-    }
+    },
+    async requestTransactionSignature({ commit, state }, transactionData) {
+      console.log('Action: requestTransactionSignature', transactionData);
+      commit('setTransactionData', transactionData);
+      try {
+        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+        const account = accounts[0];
+        const signedTx = await ethereum.request({
+          method: 'eth_signTransaction',
+          params: [
+            {
+              from: account,
+              to: transactionData.to,
+              value: transactionData.value,
+              gas: transactionData.gas,
+              data: transactionData.data,
+            },
+          ],
+        });
+        console.log('Signed Transaction:', signedTx);
+        return signedTx;
+      } catch (error) {
+        console.error('Failed to sign transaction:', error);
+        throw error;
+      }
+    },
   },
-  modules: {}
+  modules: {},
 });
 
 function performLocalGroupAllocation(users, randomNumber) {

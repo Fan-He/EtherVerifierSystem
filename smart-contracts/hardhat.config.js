@@ -8,7 +8,7 @@
 require("@nomiclabs/hardhat-ethers");
 
 module.exports = {
-  solidity: "0.8.7", // Specify the version of Solidity you are using
+  solidity: "0.8.8", // Specify the version of Solidity you are using
   networks: {
     hardhat: {},
     sepolia: {

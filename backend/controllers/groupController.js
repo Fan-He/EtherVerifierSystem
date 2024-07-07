@@ -6,9 +6,11 @@ const { requestRandomNumber, checkSpecificRequestFulfillment } = require('../sma
 const { broadcastRandomNumber } = require('../webSocket'); // Import the WebSocket module
 const crypto = require('crypto');
 const { clearMessages } = require('../controllers/messageController');
-const { storeGroupHash } = require('../smart-contract/groupHashStorageIntegration');
+const { storeGroupHash } = require('../smart-contract/challengeIntegration');
 const CryptoJS = require('crypto-js');
 const openpgp = require('openpgp');
+const {Web3} = require('web3');
+const web3 = new Web3(Web3.givenProvider || 'https://sepolia.infura.io/v3/bacfcbcb951e4305867e3b18d3f5da3a'); 
 
 const NUM_GROUPS = 3; // Number of groups to allocate users into
 const NUM_VERIFIERS = 15; // Number of verifiers to select
@@ -172,7 +174,7 @@ const getNumberWithinRange = (hash, lowerLimit, upperLimit) => {
 
 const generateGroupHash = (newRandomNumber) => {
   let currentHash = CryptoJS.SHA256(newRandomNumber).toString(CryptoJS.enc.Hex);
-  let groupHash = BigInt(0);
+  let groupHashArray = [];
 
   const ranges = [
     { lower: '0x00000000', upper: '0x3FFFFFFF' },
@@ -215,15 +217,16 @@ const generateGroupHash = (newRandomNumber) => {
   for (let i = 30; i <= 64; i++) {
     const { lower, upper } = ranges[i - 30];
     const bitValue = getNumberWithinRange(currentHash, lower, upper);
-    console.log(`Bit ${i}: ${bitValue}`); 
-    groupHash = (groupHash << BigInt(4)) | bitValue;
-    currentHash = CryptoJS.SHA256(currentHash).toString(CryptoJS.enc.Hex);
+    const bitValueHex = bitValue.toString(16).padStart(8, '0'); // Convert to hex
+    const bitValueHash = CryptoJS.SHA256(bitValueHex).toString(CryptoJS.enc.Hex); // Hash it
+    groupHashArray.push(`0x${bitValueHash}`);
+    currentHash = bitValueHash; // Update the hash for the next iteration
   }
 
-  // Convert groupHash to hex string and pad with leading zeros to make it 64 bits
-  const groupHashHex = groupHash.toString(16).padStart(16, '0');
-  return `0000000000000000000000000000${groupHashHex}`;
+  return groupHashArray;
 };
+
+
 
 
 
@@ -285,6 +288,11 @@ const generateGroupHashController = async (req, res) => {
       return res.status(403).json({ message: 'Access denied, only leaders can generate group hash' });
     }
 
+    const provider = await User.findById(group.provider);
+    if (!provider) {
+      return res.status(404).json({ message: 'Provider not found' });
+    }
+
     const memberIds = group.verifiers.concat(group.provider).map(member => member._id);
     const personalHashes = await getPersonalHashes(user, req.user.tempPassword, memberIds);
 
@@ -293,12 +301,33 @@ const generateGroupHashController = async (req, res) => {
     }
 
     const newRandomNumber = generateNewRandomNumber(personalHashes);
-    const groupHash = generateGroupHash(newRandomNumber);
-    console.log("groupHash: ", groupHash);
+    const groupHashArray = generateGroupHash(newRandomNumber);
+    console.log("groupHashArray: ", groupHashArray);
 
-    await storeGroupHash(groupHash);
+    const recipient = provider.walletAddress;
+    const challengeText = "emit the challenge";
 
-    res.status(200).json({ groupHash });
+    const from = '0x9bB61dcD1A458fFa2d976c78f4a2Aae4f81Da0cc';
+    const privateKey = '2c02bc078bc2f0702f1bbbd1e32d56e3ad8fcc317bc83c1856e34f0528f437a8';
+
+    const balance = await web3.eth.getBalance(from);
+    const gasPrice = await web3.eth.getGasPrice();
+    const gasLimit = 3000000;
+    const requiredBalance = BigInt(gasPrice) * BigInt(gasLimit);
+
+    console.log("requiredBalance: ", requiredBalance);
+    console.log("balance: ", balance);
+
+    if (BigInt(balance) < requiredBalance) {
+      return res.status(400).json({ message: `Insufficient funds for gas. Required: ${Number(requiredBalance) / 1e18} ETH, Available: ${Number(balance) / 1e18} ETH` });
+    }
+
+    console.log("wallet private key is: ", privateKey);
+
+    const receipt = await storeGroupHash(from, privateKey, recipient, challengeText, groupHashArray);
+    console.log('Transaction receipt:', receipt);
+
+    res.status(200).json({ groupHashArray });
   } catch (error) {
     console.error('Error in generateGroupHashController:', error);
     res.status(500).json({ error: error.message });
