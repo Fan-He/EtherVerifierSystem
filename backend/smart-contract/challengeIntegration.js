@@ -15,6 +15,7 @@ const common = new Common({ chain: Chain.Sepolia, hardfork: Hardfork.London });
 const storeGroupHash = async (from, privateKey, recipient, challengeText, groupHashArray) => {
   try {
     console.log("group hash in integration is: \n", groupHashArray);
+    console.log("recipient: ", recipient);
 
     // Encode the data using ABI
     const data = contract.methods.storeGroupHash(recipient, challengeText, groupHashArray).encodeABI();
