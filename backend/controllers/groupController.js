@@ -6,7 +6,7 @@ const { requestRandomNumber, checkSpecificRequestFulfillment } = require('../sma
 const { broadcastRandomNumber } = require('../webSocket'); // Import the WebSocket module
 const crypto = require('crypto');
 const { clearMessages } = require('../controllers/messageController');
-const { storeGroupHash } = require('../smart-contract/challengeIntegration');
+const { storeGroupHash, getStoredGroupHash } = require('../smart-contract/challengeIntegration');
 const CryptoJS = require('crypto-js');
 const openpgp = require('openpgp');
 const {Web3} = require('web3');
@@ -326,6 +326,9 @@ const generateGroupHashController = async (req, res) => {
 
     const receipt = await storeGroupHash(from, privateKey, recipient, challengeText, groupHashArray);
     console.log('Transaction receipt:', receipt);
+
+    const storedGroupHash = await getStoredGroupHash(recipient);
+    console.log('Stored Group Hash:', storedGroupHash);
 
     res.status(200).json({ groupHashArray });
   } catch (error) {

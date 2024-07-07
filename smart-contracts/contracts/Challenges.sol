@@ -22,7 +22,9 @@ contract Challenges {
 
     Challenge[] public challenges;
 
-    event GroupHashStored(bytes32[] groupHash);
+    mapping(address => bytes32[]) public storedGroupHashes;
+
+    event GroupHashStored(address indexed recipient, string challengeText, bytes32[] groupHashArray);
 
     event ChallengeCreated(uint indexed challengeId, address indexed recipient, string challengeText);
     event SubChallengeSolved(uint indexed challengeId, uint indexed subChallengeIndex, bytes32 subSolution);
@@ -31,9 +33,13 @@ contract Challenges {
     event log2(bytes solved);
     event log3(bytes32 solved);
 
-    function storeGroupHash( address _recipient, string memory _challengeText, bytes32[] memory groupHash) public {
-        emit GroupHashStored(groupHash);
-        createChallenge(_recipient, _challengeText, groupHash);
+    function storeGroupHash(address recipient, string memory challengeText, bytes32[] memory groupHashArray) public {
+        storedGroupHashes[recipient] = groupHashArray;
+        emit GroupHashStored(recipient, challengeText, groupHashArray);
+    }
+
+    function getGroupHash(address recipient) public view returns (bytes32[] memory) {
+        return storedGroupHashes[recipient];
     }
 
     function createChallenge(address _recipient, string memory _challengeText, bytes32[] memory _subChallenges) public {
