@@ -175,6 +175,7 @@ const getNumberWithinRange = (hash, lowerLimit, upperLimit) => {
 const generateGroupHash = (newRandomNumber) => {
   let currentHash = CryptoJS.SHA256(newRandomNumber).toString(CryptoJS.enc.Hex);
   let groupHashArray = [];
+  let groupHexArray = [];
 
   const ranges = [
     { lower: '0x00000000', upper: '0x3FFFFFFF' },
@@ -218,8 +219,12 @@ const generateGroupHash = (newRandomNumber) => {
     const { lower, upper } = ranges[i - 30];
     const bitValue = getNumberWithinRange(currentHash, lower, upper);
     const bitValueHex = bitValue.toString(16).padStart(8, '0'); // Convert to hex
-    const bitValueHash = CryptoJS.SHA256(bitValueHex).toString(CryptoJS.enc.Hex); // Hash it
+    console.log(`Bit Hex Value ${i}:`, bitValueHex);
+    //const bitValueHash = CryptoJS.SHA256(bitValueHex).toString(CryptoJS.enc.Hex); // Hash it
+    const bitValueHexBytes = CryptoJS.enc.Hex.parse(bitValueHex);
+    const bitValueHash = CryptoJS.SHA256(bitValueHexBytes).toString(CryptoJS.enc.Hex); 
     groupHashArray.push(`0x${bitValueHash}`);
+    groupHexArray.push(bitValueHex);
     currentHash = bitValueHash; // Update the hash for the next iteration
   }
 
@@ -302,13 +307,16 @@ const generateGroupHashController = async (req, res) => {
 
     const newRandomNumber = generateNewRandomNumber(personalHashes);
     const groupHashArray = generateGroupHash(newRandomNumber);
-    console.log("groupHashArray: ", groupHashArray);
+    //console.log("groupHashArray: ", groupHashArray);
 
     const recipient = provider.walletAddress;
     const challengeText = "emit the challenge";
 
-    const from = '0x9bB61dcD1A458fFa2d976c78f4a2Aae4f81Da0cc';
-    const privateKey = '2c02bc078bc2f0702f1bbbd1e32d56e3ad8fcc317bc83c1856e34f0528f437a8';
+    // const from = '0x9bB61dcD1A458fFa2d976c78f4a2Aae4f81Da0cc';
+    // const privateKey = '2c02bc078bc2f0702f1bbbd1e32d56e3ad8fcc317bc83c1856e34f0528f437a8'; 
+
+    const from = user.walletAddress; 
+    const privateKey = user.walletPrivateKey;
 
     const balance = await web3.eth.getBalance(from);
     const gasPrice = await web3.eth.getGasPrice();
