@@ -6,7 +6,7 @@ const { bytesToHex } = require('@ethereumjs/util');
 const web3 = new Web3(Web3.givenProvider || 'https://sepolia.infura.io/v3/bacfcbcb951e4305867e3b18d3f5da3a');
 
 const { abi } = require('/var/www/EtherVerifierSystem/smart-contracts/artifacts/contracts/Challenges.sol/Challenges.json');
-const contractAddress = "0xbdB94Cc48Bc9d12bd5b2D7009214824D1b74184A";
+const contractAddress = "0xed534FD3D6F50622068f58e9c014aE26C5e98d36";
 
 const contract = new web3.eth.Contract(abi, contractAddress);
 
@@ -59,11 +59,28 @@ const storeGroupHash = async (from, privateKey, recipient, challengeText, groupH
     console.log('Transaction Receipt:', receipt);
 
     return receipt;
+
+
   } catch (error) {
     console.error('Error in storeGroupHash:', error);
     throw error;
   }
 };
+
+// const getChallengeDetails = async () => {
+//   try {
+//     const latestChallengeDetails = await contract.methods.getLatestChallengeDetails().call();
+//     console.log('Latest Challenge Details:', latestChallengeDetails);
+        
+//     const [retrievedRecipient, retrievedSubChallenges] = latestChallengeDetails;
+
+//     console.log('Recipient:', retrievedRecipient);
+//     console.log('SubChallenges:', retrievedSubChallenges);
+//   } catch (error) {
+//     console.error('Error in getChallengeDetails:', error);
+//     throw error;
+//   }
+// };
 
 // // Listen to the GroupHashStored event
 // contract.events.GroupHashStored({}, (error, event) => {
@@ -84,5 +101,6 @@ const storeGroupHash = async (from, privateKey, recipient, challengeText, groupH
 //     throw error;
 //   }
 // };
+
 
 module.exports = { storeGroupHash };

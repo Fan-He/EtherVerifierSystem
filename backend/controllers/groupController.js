@@ -338,6 +338,7 @@ const generateGroupHashController = async (req, res) => {
     // const storedGroupHash = await getStoredGroupHash(recipient);
     // console.log('Stored Group Hash:', storedGroupHash);
 
+
     res.status(200).json({ groupHashArray });
   } catch (error) {
     console.error('Error in generateGroupHashController:', error);

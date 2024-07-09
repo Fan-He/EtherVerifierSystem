@@ -475,7 +475,7 @@
       ]
     },
     "/var/www/EtherVerifierSystem/smart-contracts/contracts/Challenges.sol": {
-      "lastModificationDate": 1720505265537,
+      "lastModificationDate": 1720507668484,
       "contentHash": "407c2c5625c7448c7dc67b5f55c3f48a",
       "sourceName": "contracts/Challenges.sol",
       "solcConfig": {
