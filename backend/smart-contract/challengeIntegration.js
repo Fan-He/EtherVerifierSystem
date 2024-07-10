@@ -59,6 +59,7 @@ const storeGroupHash = async (from, privateKey, recipient, challengeText, groupH
     console.log('Transaction Receipt:', receipt);
 
     return receipt;
+    // return 0;
 
 
   } catch (error) {

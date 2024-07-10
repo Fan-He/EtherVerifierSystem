@@ -221,8 +221,8 @@ const generateGroupHash = (newRandomNumber) => {
     const bitValueHex = bitValue.toString(16).padStart(8, '0'); // Convert to hex
     console.log(`Bit Hex Value ${i}:`, bitValueHex);
     //const bitValueHash = CryptoJS.SHA256(bitValueHex).toString(CryptoJS.enc.Hex); // Hash it
-    const bitValueHexBytes = CryptoJS.enc.Hex.parse(bitValueHex);
-    const bitValueHash = CryptoJS.SHA256(bitValueHexBytes).toString(CryptoJS.enc.Hex); 
+    const bitValueHash = getSHA256HexToHex(bitValueHex);
+    console.log(`Bit Hash Value ${i}:`, bitValueHash);
     groupHashArray.push(`0x${bitValueHash}`);
     groupHexArray.push(bitValueHex);
     currentHash = bitValueHash; // Update the hash for the next iteration
@@ -230,6 +230,15 @@ const generateGroupHash = (newRandomNumber) => {
 
   return groupHashArray;
 };
+
+const getSHA256HexToHex = (hex) => {
+  if (hex.length % 2 !== 0) {
+    hex = '0' + hex;
+  }
+  const hexBuffer = Buffer.from(hex, 'hex');
+  // console.log(`Parsed Buffer: ${hexBuffer.toString('hex')}`);
+  return crypto.createHash('sha256').update(hexBuffer).digest('hex');
+}
 
 
 
