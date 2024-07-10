@@ -318,7 +318,10 @@ const generateGroupHashController = async (req, res) => {
     const groupHashArray = generateGroupHash(newRandomNumber);
     //console.log("groupHashArray: ", groupHashArray);
 
-    const recipient = provider.walletAddress;
+    //const recipient = provider.walletAddress;
+    const recipient = '0xF42a164E2E53e338c7b8988cf30fDE43FFF86393';
+
+
     const challengeText = "emit the challenge";
 
     // const from = '0x9bB61dcD1A458fFa2d976c78f4a2Aae4f81Da0cc';
