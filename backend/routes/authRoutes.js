@@ -1,5 +1,5 @@
 const express = require('express');
-const { register, login, getProfile, getUserProfileByEmail, switchIdentity, getIdentityCounts, requestRandomNumber, checkRequestFulfillment, getLatestRandomNumbe, getAllUsers  } = require('../controllers/authController');
+const { register, login, getProfile, getUserProfileByEmail, switchIdentity, getIdentityCounts, requestRandomNumber, checkRequestFulfillment, getLatestRandomNumbe, getAllUsers, getAllProviders  } = require('../controllers/authController');
 const authMiddleware = require('../middleware/authMiddleware');
 const updateUserLocation = require('../middleware/updateUserLocation');
 
@@ -15,6 +15,7 @@ router.get('/identity-counts', authMiddleware, getIdentityCounts);
 // router.get('/check-request-fulfillment', authMiddleware, checkRequestFulfillment);
 // router.get('/latest-random-number', authMiddleware, getLatestRandomNumber);
 router.get('/users', authMiddleware, getAllUsers);
+router.get('/providers', authMiddleware, getAllProviders);
 
 
 module.exports = router;

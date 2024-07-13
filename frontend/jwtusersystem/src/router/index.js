@@ -7,9 +7,11 @@ import SendMessage from '../components/SendMessage.vue';
 import Inbox from '../components/Inbox.vue';
 import Board from '../views/BoardView.vue';
 import MapView from '../views/MapView.vue';
+import ProvidersView from '../views/ProvidersView.vue';
 import RandomNumber from '../components/RandomNumber.vue'; 
 import GroupDisplay from '../components/GroupDisplay.vue';
 import Debug from '../components/Debug.vue';
+
 
 
 const routes = [
@@ -23,7 +25,8 @@ const routes = [
   { path: '/map', name: 'map', component: MapView }, 
   { path: '/random-number', name: 'RandomNumber', component: RandomNumber },
   { path: '/group-display', name: 'GroupDisplay', component: GroupDisplay }, 
-  { path: '/debug', name: 'Debug', component: Debug }
+  { path: '/debug', name: 'Debug', component: Debug }, 
+  { path: '/providers', name: 'Providers', component: ProvidersView }
 ];
 
 const router = createRouter({

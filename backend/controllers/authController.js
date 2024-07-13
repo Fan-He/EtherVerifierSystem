@@ -204,3 +204,13 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
+exports.getAllProviders = async (req, res) => {
+  try {
+    const providers = await User.find({ identity: 'provider' }).select('walletAddress');
+    res.json(providers);
+  } catch (error) {
+    console.error('Failed to fetch providers:', error);
+    res.status(500).json({ error: 'Failed to fetch providers' });
+  }
+};
+

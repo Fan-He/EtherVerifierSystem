@@ -20,6 +20,7 @@ declare module 'vue' {
     Login: typeof import('./src/components/Login.vue')['default']
     Map: typeof import('./src/components/Map.vue')['default']
     Profile: typeof import('./src/components/Profile.vue')['default']
+    Providers: typeof import('./src/components/Providers.vue')['default']
     RandomNumber: typeof import('./src/components/RandomNumber.vue')['default']
     Register: typeof import('./src/components/Register.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
