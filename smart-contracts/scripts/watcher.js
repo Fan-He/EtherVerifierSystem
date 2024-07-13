@@ -29,7 +29,7 @@ remoteContract.on("ChallengeSubmitted", async (challengeId, solved, event) => {
   console.log(`challengeId: ${challengeId}`);
   console.log(`solved: ${solved}`);
   console.log(`event: ${event.log}`);
-})
+})w
 let countDownActive = true
 remoteContract.on("ChallengeCreated", async (recipient, challengeText, hashes, id, event) => {
   try {

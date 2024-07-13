@@ -1,39 +1,41 @@
+// // scripts/deploy_vrf.js
+// const { ethers } = require("hardhat");
+
 // async function main() {
-//     const [deployer] = await ethers.getSigners();
-//     console.log("Deploying contracts with the account:", deployer.address);
+//   const SubscriptionConsumer = await ethers.getContractFactory("SubscriptionConsumer");
+//   const subscriptionId = ethers.BigNumber.from("105306430092655140506577265748278780331152699016007072558419937032841393270693"); // subscription ID
+//   const contract = await SubscriptionConsumer.deploy(subscriptionId);
 
-//     const subscriptionId = 11918; // Replace with your actual subscription ID
-//     const VRFv2Consumer = await ethers.getContractFactory("GroupAssignment");
-//     const vrfConsumer = await VRFv2Consumer.deploy(subscriptionId);
+//   await contract.deployed();
 
-//     await vrfConsumer.deployed();
-//     console.log("GroupAssignment deployed to:", vrfConsumer.address);
+//   console.log("SubscriptionConsumer deployed to:", contract.address);
 // }
 
 // main()
-//     .then(() => process.exit(0))
-//     .catch((error) => {
-//         console.error(error);
-//         process.exit(1);
-//     });
-const { ethers } = require("hardhat");
+//   .then(() => process.exit(0))
+//   .catch((error) => {
+//     console.error(error);
+//     process.exit(1);
+//   });
 
 async function main() {
   const [deployer] = await ethers.getSigners();
+  const subscriptionId = ethers.BigNumber.from("98397753743196572711658493329126655574458932542096793052611003949351240913023"); // subscription ID
+  
   console.log("Deploying contracts with the account:", deployer.address);
 
-  const subscriptionId = 11918; // Replace with your subscription ID
-  const GroupAssignment = await ethers.getContractFactory("GroupAssignment");
-  const groupAssignment = await GroupAssignment.deploy(subscriptionId);
+  const balance = await deployer.getBalance();
+  console.log("Account balance:", balance.toString());
 
-  await groupAssignment.deployed();
+  const SubscriptionConsumer = await ethers.getContractFactory("SubscriptionConsumer");
+  const subscriptionConsumer = await SubscriptionConsumer.deploy(subscriptionId);
 
-  console.log("GroupAssignment deployed to:", groupAssignment.address);
+  console.log("Contract deployed to address:", subscriptionConsumer.address);
 }
 
 main()
   .then(() => process.exit(0))
-  .catch(error => {
+  .catch((error) => {
     console.error(error);
     process.exit(1);
   });

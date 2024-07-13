@@ -92,28 +92,28 @@ const groupUsers = async (req, res) => {
 
     // Request a new Chainlink random number
     const account = '0x9bB61dcD1A458fFa2d976c78f4a2Aae4f81Da0cc'; 
-    // const { receipt, requestId } = await requestRandomNumber(account);
+    const { receipt, requestId } = await requestRandomNumber(account);
 
-    // console.log('Transaction receipt:', receipt);
-    // console.log('Request ID:', requestId);
+    console.log('Transaction receipt:', receipt);
+    console.log('Request ID:', requestId);
 
-    // // Wait for the specific random request to be fulfilled
-    // let fulfilled = false;
-    // let randomNumber;
-    // while (!fulfilled) {
-    //   console.log('Checking fulfillment status...');
-    //   await new Promise(resolve => setTimeout(resolve, 10000)); // Wait for 10 seconds before checking fulfillment status
-    //   const events = await checkSpecificRequestFulfillment(requestId);
-    //   if (events.length > 0) {
-    //     fulfilled = true;
-    //     randomNumber = events[0].returnValues.randomWords[0].toString();
-    //     console.log('Random number fulfilled:', randomNumber);
-    //   }
-    // }
+    // Wait for the specific random request to be fulfilled
+    let fulfilled = false;
+    let randomNumber;
+    while (!fulfilled) {
+      console.log('Checking fulfillment status...');
+      await new Promise(resolve => setTimeout(resolve, 10000)); // Wait for 10 seconds before checking fulfillment status
+      const events = await checkSpecificRequestFulfillment(requestId);
+      if (events.length > 0) {
+        fulfilled = true;
+        randomNumber = events[0].returnValues.randomWords[0].toString();
+        console.log('Random number fulfilled:', randomNumber);
+      }
+    }
 
 
-    requestId = '93197867188801296568044086163331375079620424989368734861854331415142315796425';
-    randomNumber = '84281606300465785624993331571602207613114054382280637872386505550332737756732';
+    // requestId = '93197867188801296568044086163331375079620424989368734861854331415142315796425';
+    // randomNumber = '84281606300465785624993331571602207613114054382280637872386505550332737756732';
 
 
     // Broadcast the random number to all connected clients
@@ -324,11 +324,11 @@ const generateGroupHashController = async (req, res) => {
 
     const challengeText = "emit the challenge";
 
-    // const from = '0x9bB61dcD1A458fFa2d976c78f4a2Aae4f81Da0cc';
-    // const privateKey = '2c02bc078bc2f0702f1bbbd1e32d56e3ad8fcc317bc83c1856e34f0528f437a8'; 
+    const from = '0x9bB61dcD1A458fFa2d976c78f4a2Aae4f81Da0cc';
+    const privateKey = '2c02bc078bc2f0702f1bbbd1e32d56e3ad8fcc317bc83c1856e34f0528f437a8'; 
 
-    const from = user.walletAddress; 
-    const privateKey = user.walletPrivateKey;
+    // const from = user.walletAddress; 
+    // const privateKey = user.walletPrivateKey;
 
     const balance = await web3.eth.getBalance(from);
     const gasPrice = await web3.eth.getGasPrice();
