@@ -8,7 +8,7 @@ const UserSchema = new mongoose.Schema({
   privateKey: { type: String },
   walletAddress: { type: String, unique: true },
   walletPrivateKey: { type: String },
-  identity: { type: String, enum: ['provider', 'verifier'], required: true, default: 'verifier' },
+  identity: { type: String, enum: ['provider', 'verifier', 'server'], required: true, default: 'verifier' },
   city: { type: String },
   state: { type: String },
   country: { type: String },

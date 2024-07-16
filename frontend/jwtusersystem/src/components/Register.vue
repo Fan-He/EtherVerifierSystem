@@ -9,6 +9,7 @@
           <option value="" disabled selected>Select Identity</option>
           <option value="verifier">Verifier</option>
           <option value="provider">Provider</option>
+          <option value="server">Server</option>
         </select>
         <input v-model="walletAddress" placeholder="Wallet Address (optional)" />
         <button type="submit">Register</button>
