@@ -5,7 +5,7 @@ const active = ref(0);
 
 <template>
   <div class="whole">
-      <nav class="header" @click="$router.push('/')">Ether Verifier</nav>
+      <nav class="header" @click="$router.push('/')">Decentralized Verification</nav>
       <main>
         <router-view></router-view>
       </main>

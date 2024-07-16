@@ -1,6 +1,6 @@
 <template>
     <div class="servers-container">
-      <h1>servers</h1>
+      <h1>Servers</h1>
       <div class="server-list-container">
         <ul class="server-list">
           <li v-for="server in servers" :key="server.walletAddress" class="server-item">
