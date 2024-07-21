@@ -1,4 +1,4 @@
-Commands
+server 2 clear
 #------------------frontend---------------------------
 # npm run build
 # sudo nginx -t
