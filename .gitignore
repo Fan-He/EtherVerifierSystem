@@ -1,3 +1,3 @@
 # Ignore .env files in the backend and frontend directories
-/var/www/EtherVerifierSystem/backend/.env
-/var/www/EtherVerifierSystem/frontend/jwtusersystem/.env
+/backend/.env
+/frontend/jwtusersystem/.env
