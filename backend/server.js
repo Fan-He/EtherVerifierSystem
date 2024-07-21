@@ -8,6 +8,7 @@ const randomNumberRoutes = require('./routes/randomNumberRoutes');
 const groupRoutes = require('./routes/groupRoutes');
 const { initializeWebSocketServer } = require('./webSocket'); // Import the WebSocket module
 
+// Load environment variables from .env file
 dotenv.config();
 
 const app = express();
@@ -16,12 +17,13 @@ const app = express();
 app.set('trust proxy', true);
 
 app.use(express.json());
-const Mongo_uri = 'mongodb://167.99.176.190:27017/usersystem';
+
+const Mongo_uri = `mongodb://${process.env.SERVER_IP}:27017/usersystem`;
 
 mongoose.connect(Mongo_uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5005,
+  serverSelectionTimeoutMS: 10000, // Increase timeout to 10 seconds
 })
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.log('Failed to connect to MongoDB', err));
