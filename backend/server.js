@@ -44,7 +44,10 @@ app.use((req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5005;
-const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+const HOST = '0.0.0.0';
+const server = app.listen(PORT, HOST, () => {
+  console.log(`Server running on http://${HOST}:${PORT}`);
+});
 
 // Initialize WebSocket server
 initializeWebSocketServer(server);
