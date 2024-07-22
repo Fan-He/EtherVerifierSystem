@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const path = require('path');
 const authRoutes = require('./routes/authRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 const locationRoutes = require('./routes/locationRoutes');
@@ -42,6 +43,15 @@ app.use('/api/groups', groupRoutes);
 // app.get('/health', (req, res) => {
 //   res.status(200).send('OK');
 // });
+
+// Serve static files from the frontend 'dist' directory
+const frontendDistPath = path.join(__dirname, '../frontend/jwtusersystem/dist');
+app.use(express.static(frontendDistPath));
+
+// All other routes should serve the frontend application
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendDistPath, 'index.html'));
+});
 
 
 app.use((req, res, next) => {
