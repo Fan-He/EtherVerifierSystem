@@ -36,6 +36,9 @@ app.use('/api/groups', groupRoutes);
 app.get('/', (req, res) => {
   res.send('Hello from the backend server!');
 });
+// app.use('/access', (req, res) => {
+//   res.send('Gain access from backend server');
+// });
 
 app.use((req, res, next) => {
   const realIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
@@ -48,6 +51,8 @@ const HOST = '0.0.0.0';
 const server = app.listen(PORT, HOST, () => {
   console.log(`Server running on http://${HOST}:${PORT}`);
 });
+
+
 
 // Initialize WebSocket server
 initializeWebSocketServer(server);
