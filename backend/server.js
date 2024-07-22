@@ -33,6 +33,9 @@ app.use('/api/messages', messageRoutes);
 app.use('/api/location', locationRoutes);
 app.use('/api/randomNumber', randomNumberRoutes);
 app.use('/api/groups', groupRoutes);
+app.get('/', (req, res) => {
+  res.send('Hello from the backend server!');
+});
 
 app.use((req, res, next) => {
   const realIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
