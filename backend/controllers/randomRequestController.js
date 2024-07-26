@@ -7,7 +7,7 @@ let handling = false;
 // Function to check for new random requests
 const checkForNewRequests = async () => {
   try {
-    const newRequest = await RandomRequest.findOne({ requestId: "18739654719182080837020119342860634833127652913963819565594235542797530137000" });
+    const newRequest = await RandomRequest.findOne({ fulfilled: false, used: false });
     if (newRequest && !handling) {
       console.log('New random request found:', newRequest);
       handling = true;
