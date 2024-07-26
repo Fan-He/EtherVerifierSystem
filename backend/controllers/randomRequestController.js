@@ -2,15 +2,15 @@ const RandomRequest = require('../models/RandomRequest');
 const { broadcastRandomNumber } = require('../webSocket'); // Import the broadcast function
 const { checkSpecificRequestFulfillment } = require('../smart-contract/vrfIntegration');
 
-const checking = false;
+let handling = false;
 
 // Function to check for new random requests
 const checkForNewRequests = async () => {
   try {
     const newRequest = await RandomRequest.findOne({ fulfilled: false, used: false });
-    if (newRequest && !checking) {
+    if (newRequest && !handling) {
       console.log('New random request found:', newRequest);
-      checking = true;
+      handling = true;
       await handleNewRandomRequest(newRequest);
     }
   } catch (error) {
@@ -38,7 +38,7 @@ const handleNewRandomRequest = async (request) => {
 
         // Broadcast the random number
         broadcastRandomNumber(randomNumber);
-        checking = false;
+        handling = false;
       }
     }
   } catch (error) {
