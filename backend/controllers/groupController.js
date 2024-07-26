@@ -120,6 +120,22 @@ const groupUsers = async (req, res) => {
     // console.log('Broadcasting the random number to all clients');
     // broadcastRandomNumber(randomNumber);
 
+
+    let fulfilled = false;
+    let randomNumber;
+    while (!fulfilled) {
+      console.log('Checking fulfillment status in database...');
+      await new Promise(resolve => setTimeout(resolve, 10000)); // Wait for 10 seconds before checking fulfillment status
+
+      // Check the database for the fulfillment status
+      const randomRequest = await RandomRequest.findOne({ requestId });
+      if (randomRequest && randomRequest.fulfilled) {
+        fulfilled = true;
+        randomNumber = randomRequest.randomNumber;
+        console.log('Random number fulfilled:', randomNumber);
+      }
+    }
+
     // Apply Rule A to select users
     const { verifiers, providers } = await selectUsersBasedOnRuleA(randomNumber, NUM_VERIFIERS, NUM_PROVIDERS);
 
