@@ -41,7 +41,7 @@ if (token) {
 // WebSocket client setup
 // const socket = new WebSocket(`ws://${serverIp}:5005`); // Use your actual WebSocket server address
 // const socket = new WebSocket('ws://159.89.117.145:5005');
-const socket = new WebSocket(`ws://${process.env.VITE_SERVER_IP}:5005`);
+const socket = new WebSocket(`ws://${import.meta.env.VITE_SERVER_IP}:5005`);
 
 socket.onmessage = function(event) {
   const message = JSON.parse(event.data);
