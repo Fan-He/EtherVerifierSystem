@@ -112,9 +112,6 @@ const groupUsers = async (req, res) => {
     // }
 
 
-    // // requestId = '93197867188801296568044086163331375079620424989368734861854331415142315796425';
-    // // randomNumber = '84281606300465785624993331571602207613114054382280637872386505550332737756732';
-
 
     // // Broadcast the random number to all connected clients
     // console.log('Broadcasting the random number to all clients');
@@ -135,6 +132,10 @@ const groupUsers = async (req, res) => {
         console.log('Random number fulfilled:', randomNumber);
       }
     }
+
+    // requestId = '18739654719182080837020119342860634833127652913963819565594235542797530137000';
+    // randomNumber = '75371174795607092961400685000809996050236763291045284507377004264152807971365';
+    // broadcastRandomNumber(randomNumber);
 
     // Apply Rule A to select users
     const { verifiers, providers } = await selectUsersBasedOnRuleA(randomNumber, NUM_VERIFIERS, NUM_PROVIDERS);
