@@ -364,11 +364,11 @@ const generateGroupHashController = async (req, res) => {
 
     console.log("wallet private key is: ", privateKey);
 
-    // const receipt = await storeGroupHash(from, privateKey, recipient, challengeText, groupHashArray);
-    // console.log('Transaction receipt:', receipt);
+    const receipt = await storeGroupHash(from, privateKey, recipient, challengeText, groupHashArray);
+    console.log('Transaction receipt:', receipt);
 
-    // const storedGroupHash = await getStoredGroupHash(recipient);
-    // console.log('Stored Group Hash:', storedGroupHash);
+    const storedGroupHash = await getStoredGroupHash(recipient);
+    console.log('Stored Group Hash:', storedGroupHash);
 
 
     res.status(200).json({ groupHashArray });
