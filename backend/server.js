@@ -19,7 +19,7 @@ app.set('trust proxy', true);
 
 app.use(express.json());
 
-const Mongo_uri = `mongodb://${process.env.SERVER_IP}:27017/usersystem`;
+const Mongo_uri = `mongodb://${process.env.DB_SERVER_IP}:27017/usersystem`;
 
 mongoose.connect(Mongo_uri, {
   useNewUrlParser: true,
