@@ -97,28 +97,28 @@ const groupUsers = async (req, res) => {
     console.log('Transaction receipt:', receipt);
     console.log('Request ID:', requestId);
 
-    // Wait for the specific random request to be fulfilled
-    let fulfilled = false;
-    let randomNumber;
-    while (!fulfilled) {
-      console.log('Checking fulfillment status...');
-      await new Promise(resolve => setTimeout(resolve, 10000)); // Wait for 10 seconds before checking fulfillment status
-      const events = await checkSpecificRequestFulfillment(requestId);
-      if (events.length > 0) {
-        fulfilled = true;
-        randomNumber = events[0].returnValues.randomWords[0].toString();
-        console.log('Random number fulfilled:', randomNumber);
-      }
-    }
+    // // Wait for the specific random request to be fulfilled
+    // let fulfilled = false;
+    // let randomNumber;
+    // while (!fulfilled) {
+    //   console.log('Checking fulfillment status...');
+    //   await new Promise(resolve => setTimeout(resolve, 10000)); // Wait for 10 seconds before checking fulfillment status
+    //   const events = await checkSpecificRequestFulfillment(requestId);
+    //   if (events.length > 0) {
+    //     fulfilled = true;
+    //     randomNumber = events[0].returnValues.randomWords[0].toString();
+    //     console.log('Random number fulfilled:', randomNumber);
+    //   }
+    // }
 
 
-    // requestId = '93197867188801296568044086163331375079620424989368734861854331415142315796425';
-    // randomNumber = '84281606300465785624993331571602207613114054382280637872386505550332737756732';
+    // // requestId = '93197867188801296568044086163331375079620424989368734861854331415142315796425';
+    // // randomNumber = '84281606300465785624993331571602207613114054382280637872386505550332737756732';
 
 
-    // Broadcast the random number to all connected clients
-    console.log('Broadcasting the random number to all clients');
-    broadcastRandomNumber(randomNumber);
+    // // Broadcast the random number to all connected clients
+    // console.log('Broadcasting the random number to all clients');
+    // broadcastRandomNumber(randomNumber);
 
     // Apply Rule A to select users
     const { verifiers, providers } = await selectUsersBasedOnRuleA(randomNumber, NUM_VERIFIERS, NUM_PROVIDERS);

@@ -8,6 +8,7 @@ const locationRoutes = require('./routes/locationRoutes');
 const randomNumberRoutes = require('./routes/randomNumberRoutes');
 const groupRoutes = require('./routes/groupRoutes');
 const { initializeWebSocketServer } = require('./webSocket'); // Import the WebSocket module
+const { startCheckingForNewRequests } = require('./controllers/randomRequestController');
 
 // Load environment variables from .env file
 dotenv.config();
@@ -70,5 +71,7 @@ const server = app.listen(PORT, HOST, () => {
 
 // Initialize WebSocket server
 initializeWebSocketServer(server);
+
+startCheckingForNewRequests();
 
 module.exports = app; // Export only the app
