@@ -1,4 +1,4 @@
-Commands
+server 2 clear
 #------------------frontend---------------------------
 # npm run build
 # sudo nginx -t
@@ -95,6 +95,23 @@ sudo ufw reset
 # Enable UFW (optional, if you want the default deny/allow policy active)
 sudo ufw enable
 
+
+sudo apt update
+sudo apt install ufw
+
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+
+sudo ufw allow ssh
+sudo ufw allow http
+sudo ufw allow https
+sudo ufw allow 27017
+sudo ufw allow 5005
+
+sudo ufw enable
+sudo ufw status verbose
+
+
 -----------------------------------------Way to setup a new server----------------------------------------
 0.  sudo apt update
     sudo apt upgrade -y
@@ -142,4 +159,15 @@ sudo ufw enable
     sudo systemctl restart nginx
 
 6. check for backend/server.js, frontend/j/vite.config.js and src/main.js for server ip
+
+7. change .env server ip at frontend and backend
+
+8. manage git  so that it would not update local artifacts
+    git rm --cached backend/.env
+    git rm --cached frontend/jwtusersystem/.env
+
+    git rm -r --cached frontend/jwtusersystem/dist
+    git rm -r --cached backend/build
+    git rm -r --cached backend/node_modules
+    git rm -r --cached frontend/jwtusersystem/node_modules
 

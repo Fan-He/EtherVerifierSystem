@@ -100,6 +100,7 @@
 <template>
   <div class="home-view">
     <p class="identity-text">Your identity is: {{ identity }}</p>
+    <p class="identity-text">Server IP: {{ serverIp }}</p>
     <div class="upper-square">
       <div class="square-content">
         <p class="identity-count">Providers: {{ providerCount }}</p>
@@ -122,6 +123,7 @@ export default {
       user: {},
       providerCount: 0,
       verifierCount: 0,
+      serverIp: import.meta.env.VITE_SERVER_IP
     };
   },
   async created() {
