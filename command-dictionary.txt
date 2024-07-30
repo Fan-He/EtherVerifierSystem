@@ -171,3 +171,11 @@ sudo ufw status verbose
     git rm -r --cached backend/node_modules
     git rm -r --cached frontend/jwtusersystem/node_modules
 
+
+
+-----------------------Database-----------------------------------
+sudo docker stop mongodb
+sudo docker rm mongodb
+sudo docker run -d --name mongodb --network my-network -p 27017:27017 -v mongodata:/data/db -v $(pwd)/mongod.conf:/etc/mongod.conf mongo:4.4.29 mongod --config /etc/mongod.conf
+sudo docker exec -it mongodb bash
+    mongo --username adminUser --password Goodluck1Server --authenticationDatabase admin
