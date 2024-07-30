@@ -20,7 +20,9 @@ app.set('trust proxy', true);
 
 app.use(express.json());
 
-const Mongo_uri = `mongodb://admin:Goodluck1Server@localhost:27017/usersystem?authSource=admin&ssl=true&sslPEMKeyFile=/path/to/your/client.pem&sslCAFile=/path/to/your/ca.pem`;
+//const Mongo_uri = `mongodb://${process.env.DB_SERVER_IP}:27017/usersystem`;
+
+const Mongo_uri = `mongodb://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_SERVER_IP}:27017/usersystem?authSource=admin`;
 
 mongoose.connect(Mongo_uri, {
   useNewUrlParser: true,
