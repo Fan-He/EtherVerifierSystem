@@ -3,7 +3,7 @@ const { abi } = require('/var/www/EtherVerifierSystem/smart-contracts/artifacts/
 const RandomRequest = require('../models/RandomRequest'); 
 
 const web3 = new Web3(Web3.givenProvider || 'https://sepolia.infura.io/v3/bacfcbcb951e4305867e3b18d3f5da3a');
-const contractAddress = '0x581987C85C2626867588665f0e5693195A14B684';
+const contractAddress = '0x3C39C4716669283f273BBCa6EdB8C65dCc354bB1';
 const contract = new web3.eth.Contract(abi, contractAddress);
 
 const requestRandomNumber = async (account) => {
