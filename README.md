@@ -203,5 +203,5 @@ git rm -r --cached frontend/jwtusersystem/node_modules
 For any issues or questions, please open an issue in the GitHub repository or contact hxf2023@ece.ubc.ca.
 
 ## Acknowledgments
-- **Xiaofan He**, Department of Electrical and Computer Engineering, [University of British Columbia]
-- **Zehua Wang**, Department of Electrical and Computer Engineering, [University of British Columbia]
+- **Xiaofan He**, [Department of Electrical and Computer Engineering](https://ece.ubc.ca/), [University of British Columbia](https://www.ubc.ca/)
+- **Dr. Zehua Wang**, [Department of Electrical and Computer Engineering](https://ece.ubc.ca/), [University of British Columbia](https://www.ubc.ca/)
