@@ -9,6 +9,8 @@ const contract = new web3.eth.Contract(abi, contractAddress);
 const requestRandomNumber = async (account) => {
   console.log("-------request random number from vrfIntegration--------------");
   try {
+    const owner = await contract.methods.owner().call();
+    console.log('Contract owner:', owner);
     const tx = contract.methods.requestRandomWords();
     const gas = await tx.estimateGas({ from: account });
     const gasPrice = await web3.eth.getGasPrice();
