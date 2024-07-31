@@ -11,6 +11,7 @@ const requestRandomNumber = async (account) => {
   try {
     const owner = await contract.methods.owner().call();
     console.log('Contract owner:', owner);
+    console.log('Passed in Account:', account);
     const tx = contract.methods.requestRandomWords();
     const gas = await tx.estimateGas({ from: account });
     const gasPrice = await web3.eth.getGasPrice();
