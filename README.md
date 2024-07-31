@@ -18,9 +18,8 @@ The application is built with Node.js, Vue, MongoDB, and Solidity, and it runs o
   - [Step 3: Install Docker and Run MongoDB](#step-3-install-docker-and-run-mongodb)
   - [Step 4: Start the Backend with PM2](#step-4-start-the-backend-with-pm2)
   - [Step 5: Setup Nginx](#step-5-setup-nginx)
-  - [Step 6: Update Configuration Files](#step-6-update-configuration-files)
-  - [Step 7: Update Environment Variables](#step-7-update-environment-variables)
-  - [Step 8: Manage Git](#step-8-manage-git)
+  - [Step 6: Update Environment Variables](#step-7-update-environment-variables)
+  - [Step 7: Manage Git](#step-8-manage-git)
  
 - [Acknowledgments](#acknowledgments)
 
