@@ -3,10 +3,12 @@
 
 This repository contains the code for the Decentralized Computational Resource Verification Network. This project allows users to register, login, and participate in remote computational resource verification process. It supports group formation and leader selection based on a random number generated using Chainlink. The leader of each group generates a encrypted group hash consists of 35 hashes and send it to blockchain, and the provider of each group listen for the group hash and attemps to decrypt it. The extent to which the computational resource provider can decrypt is used to evaluate the power of it's computational resource. 
 The application is built with Node.js, Vue, MongoDB, and Solidity, and it runs on DigitalOcean using Nginx and PM2.  
-<img src="images/homepage.png" alt="Homepage" width="300" />
+<img src="images/homepage.png" alt="Homepage" width="300" /><img src="images/login.png" alt="Login" width="300" /><img src="images/providers.png" alt="Providers" width="300" />
 
 ## Table of Contents
 
+- [Architecture](#architecture)
+- [Prosess Flow](#process-flow)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Setup](#setup)
@@ -19,6 +21,13 @@ The application is built with Node.js, Vue, MongoDB, and Solidity, and it runs o
   - [Step 6: Update Configuration Files](#step-6-update-configuration-files)
   - [Step 7: Update Environment Variables](#step-7-update-environment-variables)
   - [Step 8: Manage Git](#step-8-manage-git)
+
+## Architecture
+<img src="images/architecture.png" alt="Architecture" width="800" />  
+
+## Process Flow
+<img src="images/processflow1.png" alt="Architecture" width="800" />  
+<img src="images/processflow2.png" alt="Architecture" width="800" />  
 
 ## Prerequisites
 
