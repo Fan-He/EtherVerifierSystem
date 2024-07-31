@@ -3,6 +3,7 @@ const Group = require('../models/Group');
 const Message = require('../models/Message');
 const RandomRequest = require('../models/RandomRequest');
 const { requestRandomNumber, checkSpecificRequestFulfillment } = require('../smart-contract/vrfIntegration');
+const dotenv = require('dotenv');
 const { broadcastRandomNumber } = require('../webSocket'); // Import the WebSocket module
 const crypto = require('crypto');
 const { clearMessages } = require('../controllers/messageController');
@@ -15,6 +16,8 @@ const web3 = new Web3(Web3.givenProvider || 'https://sepolia.infura.io/v3/bacfcb
 const NUM_GROUPS = 3; // Number of groups to allocate users into
 const NUM_VERIFIERS = 15; // Number of verifiers to select
 const NUM_PROVIDERS = 3; // Number of providers to select
+
+dotenv.config();
 
 // Function to select users based on Rule A
 const selectUsersBasedOnRuleA = async (randomNumber, verifierCount, providerCount) => {
