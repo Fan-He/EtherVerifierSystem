@@ -1,7 +1,8 @@
 
 # Decentralized Computational Resource Verification Network
 
-This repository contains the code for the Decentralized Computational Resource Verification Network. This project allows users to register, login, and send end-to-end encrypted messages. It also supports group formation and leader selection based on a random number generated using Chainlink. The application is built with Node.js, Vue, MongoDB, and Solidity, and it runs on DigitalOcean using Nginx and PM2.
+This repository contains the code for the Decentralized Computational Resource Verification Network. This project allows users to register, login, and participate in remote computational resource verification process. It supports group formation and verification based on a random number generated using Chainlink. 
+The application is built with Node.js, Vue, MongoDB, and Solidity, and it runs on DigitalOcean using Nginx and PM2.
 
 ## Table of Contents
 
