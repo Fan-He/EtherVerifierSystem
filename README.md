@@ -18,8 +18,8 @@ The application is built with Node.js, Vue, MongoDB, and Solidity, and it runs o
   - [Step 3: Install Docker and Run MongoDB](#step-3-install-docker-and-run-mongodb)
   - [Step 4: Start the Backend with PM2](#step-4-start-the-backend-with-pm2)
   - [Step 5: Setup Nginx](#step-5-setup-nginx)
-  - [Step 6: Update Environment Variables](#step-7-update-environment-variables)
-  - [Step 7: Manage Git](#step-8-manage-git)
+  - [Step 6: Update Environment Variables](#step-6-update-environment-variables)
+  - [Step 7: Manage Git](#step-7-manage-git)
  
 - [Acknowledgments](#acknowledgments)
 
@@ -202,6 +202,6 @@ git rm -r --cached frontend/jwtusersystem/node_modules
 ## Contact
 For any issues or questions, please open an issue in the GitHub repository or contact hxf2023@ece.ubc.ca.
 
-## Acknowledgements
+## Acknowledgments
 - **Xiaofan He**, Department of Electrical and Computer Engineering, [University of British Columbia]
 - **Zehua Wang**, Department of Electrical and Computer Engineering, [University of British Columbia]
