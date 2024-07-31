@@ -136,4 +136,4 @@ git rm -r --cached frontend/jwtusersystem/node_modules
 ```
 
 
-For any issues or questions, please open an issue in the GitHub repository.
+For any issues or questions, please open an issue in the GitHub repository or contact hxf2023@ece.ubc.ca.
