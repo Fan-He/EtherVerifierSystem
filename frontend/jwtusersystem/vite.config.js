@@ -22,7 +22,7 @@ export default defineConfig(({ mode }) => {
       proxy: {
         // '/api': `http://${env.VITE_SERVER_IP}:5005`
         // '/api': 'http://159.89.117.145'
-        '/api': import.meta.env.LOAD_BALANCER_URL
+        '/api': env.LOAD_BALANCER_URL
       }
     }
   };
