@@ -1,7 +1,7 @@
 
 # Decentralized Computational Resource Verification Network
 
-This repository contains the code for the Decentralized Computational Resource Verification Network. This project allows users to register, login, and participate in remote computational resource verification process. It supports group formation and leader selection based on a random number generated using Chainlink. The leader of each group generates a encrypted group hash consists of 35 hashes and send it to blockchain, and the provider of each group listen for the group hash and attemps to decrypt it. The extent to which the computational resource provider can decrypt is used to evaluate the power of it's computational resource. 
+This repository contains the code for the Decentralized Computational Resource Verification Network. This project allows users to register, login, and participate in remote computational resource verification process. It supports group formation and leader selection based on a random number generated using Chainlink. The leader of each group generates a encrypted group hash consists of 35 hashes and send it to blockchain, and the provider of each group listen for the group hash and attemps to decrypt it. The extent to which the computational resource provider can decrypt is used to evaluate the power of it's computational resource.  
 The application is built with Node.js, Vue, MongoDB, and Solidity, and it runs on DigitalOcean using Nginx and PM2.  
 <img src="images/homepage.png" alt="Homepage" width="300" /><img src="images/login.png" alt="Login" width="300" /><img src="images/providers.png" alt="Providers" width="300" />
 
@@ -18,9 +18,10 @@ The application is built with Node.js, Vue, MongoDB, and Solidity, and it runs o
   - [Step 3: Install Docker and Run MongoDB](#step-3-install-docker-and-run-mongodb)
   - [Step 4: Start the Backend with PM2](#step-4-start-the-backend-with-pm2)
   - [Step 5: Setup Nginx](#step-5-setup-nginx)
-  - [Step 6: Update Configuration Files](#step-6-update-configuration-files)
-  - [Step 7: Update Environment Variables](#step-7-update-environment-variables)
-  - [Step 8: Manage Git](#step-8-manage-git)
+  - [Step 6: Update Environment Variables](#step-6-update-environment-variables)
+  - [Step 7: Manage Git](#step-7-manage-git)
+ 
+- [Acknowledgments](#acknowledgments)
 
 ## Architecture
 <img src="images/architecture.png" alt="Architecture" width="800" />  
@@ -160,33 +161,32 @@ sudo nginx -t
 sudo systemctl restart nginx
 ```
 
-### Step 6: Update Configuration Files
 
-Update \`backend/server.js\`, \`frontend/j/vite.config.js\`, and \`src/main.js\` with the load balancer's server IP.
+### Step 6: Update Environment Variables
 
-### Step 7: Update Environment Variables
-
-Update the \`.env\` files with the server IP for both the frontend and backend. Example:  
+Update the \`.env\` files with the server IP for both the frontend and backend.  
+Example:  
 \`backend/.env\`: 
 ```
 PORT=5005
 SERVER_IP=159.89.121.134
-WALLET_ADDRESS=0x32112f01292DAf1d9f5B97735E8c5A47c17FC284
-PRIVATE_KEY=175ef4d0dbd354b2e74a80a046885137ed041fec2116ed110c9d24831294a395
-MONGO_URI=mongodb://159.89.121.134:27017/usersystem
-JWT_SECRET=4897a5fb91cec8640e3337c390c1e76fea06cc0f076c66fa7edc1dbfa70d2217039fa97262b58e74289afd956979584e315b90086746f84fc641c8d9fa3b14b7
-INFURA_URL="https://sepolia.infura.io/v3/bacfcbcb951e4305867e3b18d3f5da3a"
-PRIVATE_KEY="2c02bc078bc2f0702f1bbbd1e32d56e3ad8fcc317bc83c1856e34f0528f437a8"
+WALLET_ADDRESS=your-wallet-address
+MONGO_URI=mongodb://[your-server-ip]:27017/usersystem
+JWT_SECRET=your-jwt-secret
+INFURA_URL="your-infura-url"
+PRIVATE_KEY="your-private-key"
 DB_SERVER_IP="159.89.121.134"
 DB_USERNAME=adminUser
-DB_PASSWORD=Goodluck1Server
+DB_PASSWORD=adminPassword
 ```
 \`frontend/.env\`: 
 ```
 VITE_SERVER_IP=159.89.121.134
+LOAD_BALANCER_URL=http://159.89.117.145
 ```
+Be aware that VITE_SERVER_IP and SERVER_IP is the ip of the server that frontend and backend is running on.  
 
-### Step 8: Manage Git
+### Step 7: Manage Git
 
 Ensure local artifacts are not updated in the repository:
 
@@ -199,5 +199,9 @@ git rm -r --cached backend/node_modules
 git rm -r --cached frontend/jwtusersystem/node_modules
 ```
 
-
+## Contact
 For any issues or questions, please open an issue in the GitHub repository or contact hxf2023@ece.ubc.ca.
+
+## Acknowledgments
+- **Xiaofan He**, [Department of Electrical and Computer Engineering](https://ece.ubc.ca/), [University of British Columbia](https://www.ubc.ca/)
+- **Dr. Zehua Wang**, [Department of Electrical and Computer Engineering](https://ece.ubc.ca/), [University of British Columbia](https://www.ubc.ca/)
