@@ -29,7 +29,8 @@ const app = createApp(App);
 
 // Set up the Axios default base URL
 // axios.defaults.baseURL = `http://${serverIp}`; // Use your actual server URL
-axios.defaults.baseURL = 'http://159.89.117.145';
+// axios.defaults.baseURL = 'http://159.89.117.145';
+axios.defaults.baseURL = `http://${import.meta.env.LOAD_BALANCER_IP}`;
 
 // Fetch the current user profile if a token exists
 const token = localStorage.getItem('token');
