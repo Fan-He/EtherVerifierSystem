@@ -344,8 +344,11 @@ const generateGroupHashController = async (req, res) => {
 
     const challengeText = "emit the challenge";
 
-    const from = '0x9bB61dcD1A458fFa2d976c78f4a2Aae4f81Da0cc';
-    const privateKey = '2c02bc078bc2f0702f1bbbd1e32d56e3ad8fcc317bc83c1856e34f0528f437a8'; 
+    // const from = '0x9bB61dcD1A458fFa2d976c78f4a2Aae4f81Da0cc';
+    // const privateKey = '2c02bc078bc2f0702f1bbbd1e32d56e3ad8fcc317bc83c1856e34f0528f437a8'; 
+    
+    const from = process.env.WALLET_ADDRESS;
+    const privateKey = process.env.WALLET_PRIVATE_KEY; 
 
     // const from = user.walletAddress; 
     // const privateKey = user.walletPrivateKey;
