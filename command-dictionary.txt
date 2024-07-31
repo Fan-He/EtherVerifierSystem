@@ -1,4 +1,4 @@
-Commands
+server 2 clear
 #------------------frontend---------------------------
 # npm run build
 # sudo nginx -t
@@ -96,4 +96,86 @@ sudo ufw reset
 sudo ufw enable
 
 
+sudo apt update
+sudo apt install ufw
 
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+
+sudo ufw allow ssh
+sudo ufw allow http
+sudo ufw allow https
+sudo ufw allow 27017
+sudo ufw allow 5005
+
+sudo ufw enable
+sudo ufw status verbose
+
+
+-----------------------------------------Way to setup a new server----------------------------------------
+0.  sudo apt update
+    sudo apt upgrade -y
+    sudo apt install -y curl gnupg2 ca-certificates lsb-release
+    install Node.js specific version: 
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+    export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    nvm --version
+    nvm install v18.20.3
+    nvm alias default v18.20.3
+
+    npm install -g pm2
+
+1. clone git 
+2. reset to /var/www
+    at root: 
+    sudo mkdir -p /var/www/EtherVerifierSystem
+    sudo mv /root/EtherVerifierSystem /var/www/
+
+    sudo chown -R www-data:www-data /var/www/EtherVerifierSystem
+    sudo chmod -R 755 /var/www/EtherVerifierSystem
+
+    then browse to this directory
+
+3. install Docker and run MongoDB in Docker: 
+    sudo apt install -y docker.io
+    sudo systemctl start docker
+    sudo systemctl enable docker
+    sudo docker run -d --name mongodb -p 27017:27017 mongo:4.4.29
+
+4. backend pm2: 
+    pm2 start server.js --name "ether-verifier-backend"
+    pm2 save
+    pm2 startup
+    pm2 status
+    pm2 logs ether-verifier-backend
+
+5. Nginx setup: 
+    sudo apt install -y nginx
+    sudo nano /etc/nginx/sites-available/default
+    set configuration to be similar as current
+    npm run build
+    sudo nginx -t
+    sudo systemctl restart nginx
+
+6. check for backend/server.js, frontend/j/vite.config.js and src/main.js for server ip
+
+7. change .env server ip at frontend and backend
+
+8. manage git  so that it would not update local artifacts
+    git rm --cached backend/.env
+    git rm --cached frontend/jwtusersystem/.env
+
+    git rm -r --cached frontend/jwtusersystem/dist
+    git rm -r --cached backend/build
+    git rm -r --cached backend/node_modules
+    git rm -r --cached frontend/jwtusersystem/node_modules
+
+
+
+-----------------------Database-----------------------------------
+sudo docker stop mongodb
+sudo docker rm mongodb
+sudo docker run -d --name mongodb --network my-network -p 27017:27017 -v mongodata:/data/db -v $(pwd)/mongod.conf:/etc/mongod.conf mongo:4.4.29 mongod --config /etc/mongod.conf
+sudo docker exec -it mongodb bash
+    mongo --username adminUser --password Goodluck1Server --authenticationDatabase admin

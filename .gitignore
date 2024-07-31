@@ -1,0 +1,9 @@
+# Ignore .env files in the backend and frontend directories
+/backend/.env
+/frontend/jwtusersystem/.env
+
+# Ignore build artifacts
+/frontend/jwtusersystem/dist/
+/backend/build/
+/backend/node_modules/
+/frontend/jwtusersystem/node_modules/

@@ -22,11 +22,14 @@ import axios from 'axios';
 // connectMetaMask();
 
 
+const serverIp = import.meta.env.VITE_SERVER_IP;
+
 // Create the Vue application
 const app = createApp(App);
 
 // Set up the Axios default base URL
-axios.defaults.baseURL = 'http://167.99.176.190'; // Use your actual server URL
+// axios.defaults.baseURL = `http://${serverIp}`; // Use your actual server URL
+axios.defaults.baseURL = 'http://159.89.117.145';
 
 // Fetch the current user profile if a token exists
 const token = localStorage.getItem('token');
@@ -36,7 +39,9 @@ if (token) {
 }
 
 // WebSocket client setup
-const socket = new WebSocket('ws://167.99.176.190:5005'); // Use your actual WebSocket server address
+// const socket = new WebSocket(`ws://${serverIp}:5005`); // Use your actual WebSocket server address
+// const socket = new WebSocket('ws://159.89.117.145:5005');
+const socket = new WebSocket(`ws://${import.meta.env.VITE_SERVER_IP}:5005`);
 
 socket.onmessage = function(event) {
   const message = JSON.parse(event.data);
