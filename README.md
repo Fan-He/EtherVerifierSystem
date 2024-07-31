@@ -36,10 +36,11 @@ Follow these steps to set up the application on a new server.
 
 Update the system and install necessary packages:
 
-\`\`\`sh
+```
 sudo apt update
 sudo apt upgrade -y
 sudo apt install -y curl gnupg2 ca-certificates lsb-release
+```
 
 # Install Node.js using NVM
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
