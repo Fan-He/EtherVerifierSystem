@@ -94,12 +94,12 @@ Install Docker and start MongoDB in a Docker container:
 sudo apt install -y docker.io
 sudo systemctl start docker
 sudo systemctl enable docker
-sudo docker run -d --name mongodb --network my-network -p 27017:27017 -v mongodata:/data/db -v $(pwd)/mongod.conf:/etc/mongod.conf mongo:4.4.29 mongod --config /etc/mongod.conf
+sudo docker run -d --name mongodb -p 27017:27017 mongo:4.4.29
 ```
 To access mongo shell: 
 ```
-sudo docker exec -it mongodb bash
-    mongo --username adminUser --password Goodluck1Server --authenticationDatabase admin
+sudo docker ps
+  sudo docker exec -it <container_id_or_name> mongo
 ```
 
 ### Step 4: Start the Backend with PM2
