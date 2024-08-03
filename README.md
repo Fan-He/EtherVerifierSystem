@@ -43,6 +43,7 @@ Before you begin, ensure you have the following installed on your server:
 
 ## Installation
 
+[![Watch the video](https://img.youtube.com/vi/Tx5cd_UdbCw/0.jpg)](https://youtu.be/Tx5cd_UdbCw?si=2leGDmTtzeOGeLQZ)
 Follow these steps to set up the application on a new server.
 
 ### Step 0: System Update and Node.js Installation
