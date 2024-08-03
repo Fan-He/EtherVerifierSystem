@@ -16,9 +16,9 @@ The application is built with Node.js, Vue, MongoDB, and Solidity, and it runs o
   - [Step 1: Clone the Repository](#step-1-clone-the-repository)
   - [Step 2: Move to the Target Directory](#step-2-move-to-the-target-directory)
   - [Step 3: Install Docker and Run MongoDB](#step-3-install-docker-and-run-mongodb)
-  - [Step 4: Start the Backend with PM2](#step-4-start-the-backend-with-pm2)
-  - [Step 5: Setup Nginx](#step-5-setup-nginx)
-  - [Step 6: Update Environment Variables](#step-6-update-environment-variables)
+  - [Step 4: Update Environment Variables](#step-6-update-environment-variables)
+  - [Step 5: Start the Backend with PM2](#step-4-start-the-backend-with-pm2)
+  - [Step 6: Setup Nginx](#step-5-setup-nginx)
   - [Step 7: Manage Git](#step-7-manage-git)
   - [Step 8: Check Load Balancer Configuration](#step-8-check-load-balancer-configuration)
  
@@ -102,8 +102,31 @@ To access mongo shell:
 sudo docker ps
   sudo docker exec -it <container_id_or_name> mongo
 ```
+### Step 4: Update Environment Variables
 
-### Step 4: Start the Backend with PM2
+Update the \`.env\` files with the server IP for both the frontend and backend.  
+Example:  
+\`backend/.env\`: 
+```
+PORT=5005
+SERVER_IP=159.89.121.134
+WALLET_ADDRESS=your-wallet-address
+MONGO_URI=mongodb://[your-server-ip]:27017/usersystem
+JWT_SECRET=your-jwt-secret
+INFURA_URL="your-infura-url"
+PRIVATE_KEY="your-private-key"
+DB_SERVER_IP="159.89.121.134"
+DB_USERNAME=adminUser
+DB_PASSWORD=adminPassword
+```
+\`frontend/.env\`: 
+```
+VITE_SERVER_IP=159.89.121.134
+LOAD_BALANCER_URL=http://159.89.117.145
+```
+Be aware that VITE_SERVER_IP and SERVER_IP is the ip of the server that frontend and backend is running on.  
+
+### Step 5: Start the Backend with PM2
 
 Start the backend server using PM2:
 
@@ -116,7 +139,7 @@ pm2 status
 pm2 logs ether-verifier-backend
 ```
 
-### Step 5: Setup Nginx
+### Step 6: Setup Nginx
 
 Install and configure Nginx:
 
@@ -168,29 +191,6 @@ sudo systemctl restart nginx
 ```
 
 
-### Step 6: Update Environment Variables
-
-Update the \`.env\` files with the server IP for both the frontend and backend.  
-Example:  
-\`backend/.env\`: 
-```
-PORT=5005
-SERVER_IP=159.89.121.134
-WALLET_ADDRESS=your-wallet-address
-MONGO_URI=mongodb://[your-server-ip]:27017/usersystem
-JWT_SECRET=your-jwt-secret
-INFURA_URL="your-infura-url"
-PRIVATE_KEY="your-private-key"
-DB_SERVER_IP="159.89.121.134"
-DB_USERNAME=adminUser
-DB_PASSWORD=adminPassword
-```
-\`frontend/.env\`: 
-```
-VITE_SERVER_IP=159.89.121.134
-LOAD_BALANCER_URL=http://159.89.117.145
-```
-Be aware that VITE_SERVER_IP and SERVER_IP is the ip of the server that frontend and backend is running on.  
 
 ### Step 7: Manage Git
 
