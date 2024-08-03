@@ -3,6 +3,7 @@ const Group = require('../models/Group');
 const Message = require('../models/Message');
 const RandomRequest = require('../models/RandomRequest');
 const { requestRandomNumber, checkSpecificRequestFulfillment } = require('../smart-contract/vrfIntegration');
+const dotenv = require('dotenv');
 const { broadcastRandomNumber } = require('../webSocket'); // Import the WebSocket module
 const crypto = require('crypto');
 const { clearMessages } = require('../controllers/messageController');
@@ -15,6 +16,8 @@ const web3 = new Web3(Web3.givenProvider || 'https://sepolia.infura.io/v3/bacfcb
 const NUM_GROUPS = 3; // Number of groups to allocate users into
 const NUM_VERIFIERS = 15; // Number of verifiers to select
 const NUM_PROVIDERS = 3; // Number of providers to select
+
+dotenv.config();
 
 // Function to select users based on Rule A
 const selectUsersBasedOnRuleA = async (randomNumber, verifierCount, providerCount) => {
@@ -344,8 +347,11 @@ const generateGroupHashController = async (req, res) => {
 
     const challengeText = "emit the challenge";
 
-    const from = '0x9bB61dcD1A458fFa2d976c78f4a2Aae4f81Da0cc';
-    const privateKey = '2c02bc078bc2f0702f1bbbd1e32d56e3ad8fcc317bc83c1856e34f0528f437a8'; 
+    // const from = '0x9bB61dcD1A458fFa2d976c78f4a2Aae4f81Da0cc';
+    // const privateKey = '2c02bc078bc2f0702f1bbbd1e32d56e3ad8fcc317bc83c1856e34f0528f437a8'; 
+    
+    const from = process.env.WALLET_ADDRESS;
+    const privateKey = process.env.WALLET_PRIVATE_KEY; 
 
     // const from = user.walletAddress; 
     // const privateKey = user.walletPrivateKey;

@@ -3,12 +3,15 @@ const { abi } = require('/var/www/EtherVerifierSystem/smart-contracts/artifacts/
 const RandomRequest = require('../models/RandomRequest'); 
 
 const web3 = new Web3(Web3.givenProvider || 'https://sepolia.infura.io/v3/bacfcbcb951e4305867e3b18d3f5da3a');
-const contractAddress = '0x581987C85C2626867588665f0e5693195A14B684';
+const contractAddress = '0x3C39C4716669283f273BBCa6EdB8C65dCc354bB1';
 const contract = new web3.eth.Contract(abi, contractAddress);
 
 const requestRandomNumber = async (account) => {
   console.log("-------request random number from vrfIntegration--------------");
   try {
+    const owner = await contract.methods.owner().call();
+    console.log('Contract owner:', owner);
+    console.log('Passed in Account:', account);
     const tx = contract.methods.requestRandomWords();
     const gas = await tx.estimateGas({ from: account });
     const gasPrice = await web3.eth.getGasPrice();
