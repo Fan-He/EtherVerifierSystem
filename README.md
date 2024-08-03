@@ -72,7 +72,7 @@ npm install -g pm2
 Clone the repository from GitHub:
 
 ```
-git clone https://github.com/yourusername/EtherVerifierSystem.git
+git clone https://github.com/Fan-He/EtherVerifierSystem.git
 ```
 
 ### Step 2: Move to the Target Directory
