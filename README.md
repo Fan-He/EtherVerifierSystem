@@ -20,6 +20,7 @@ The application is built with Node.js, Vue, MongoDB, and Solidity, and it runs o
   - [Step 5: Setup Nginx](#step-5-setup-nginx)
   - [Step 6: Update Environment Variables](#step-6-update-environment-variables)
   - [Step 7: Manage Git](#step-7-manage-git)
+  - [Step 8: Check Load Balancer Configuration](#step-8-check-load-balancer-configuration)
  
 - [Acknowledgments](#acknowledgments)
 
