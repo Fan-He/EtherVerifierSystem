@@ -132,6 +132,7 @@ Start the backend server using PM2:
 
 ```
 cd backend
+npm install express
 pm2 start server.js --name "ether-verifier-backend"
 pm2 save
 pm2 startup
@@ -185,6 +186,7 @@ Then, build the frontend and restart Nginx:
 
 ```
 cd frontend/jwtusersystem
+npm install vite
 npm run build
 sudo nginx -t
 sudo systemctl restart nginx
