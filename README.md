@@ -204,6 +204,51 @@ git rm -r --cached backend/node_modules
 git rm -r --cached frontend/jwtusersystem/node_modules
 ```
 
+### Step 8: Check Load Balancer Configuration
+Ensure your load balancer server has the following configuration setup: 
+```
+sudo nano /etc/nginx/sites-available/default
+```
+```
+upstream backend_servers {
+    ip_hash;
+    server <your-server-1-ip>:5005; # IP and port of server 1
+    server <your-server-1-ip>:5005;  # IP and port of server 2
+}
+
+server {
+    listen 80;
+    server_name 159.89.117.145; # Replace with your load balancer server IP or domain
+
+    location / {
+        proxy_pass http://backend_servers;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /api {
+        proxy_pass http://backend_servers/api;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /socket.io {
+        proxy_pass http://backend_servers/socket.io;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}
+```
+
 ## Contact
 For any issues or questions, please open an issue in the GitHub repository or contact hxf2023@ece.ubc.ca.
 
